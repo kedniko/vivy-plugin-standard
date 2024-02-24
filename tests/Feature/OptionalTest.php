@@ -5,15 +5,9 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\App;
-use Kedniko\Vivy\O;
 use Kedniko\Vivy\V;
 
 uses()->group('group');
-
-beforeAll(function () {
-  App::boot();
-});
 
 
 test('optional-1', function () {

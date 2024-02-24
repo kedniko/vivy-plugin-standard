@@ -15,7 +15,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Kedniko\\Vivy\\Plugin\\Standard\\": "src/"
+            "Kedniko\\VivyPluginStandard\\": "src/"
         }
     },
     "require": {
@@ -45,6 +45,12 @@
             "pestphp/pest-plugin": true
         }
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../vivy"
+        }
+    ],
     "scripts": {
         "refacto": "rector",
         "lint": "pint",
@@ -52,6 +58,7 @@
         "test:lint": "pint --test",
         "test:types": "phpstan analyse --ansi",
         "test": "pest --colors=always",
+        "scan": "php ./vendor/bin/vivy",
         "test:all": [
             "@test:refacto",
             "@test:lint",

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
 use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\Core\Helpers;
@@ -8,6 +8,7 @@ use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\Vivy\Messages\TransformerMessage;
+use Kedniko\VivyPluginStandard\Enum\TransformersEnum;
 
 final class TypeBool extends TypeScalar
 {
@@ -62,8 +63,8 @@ final class TypeBool extends TypeScalar
         $options = Helpers::getOptions($options);
         $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('boolToInt');
 
-        $ruleID = Transformers::ID_BOOL_TO_INT;
-        $type = (new TypeInt())->from($this);
+        $ruleID = TransformersEnum::ID_BOOL_TO_INT->value;
+        $type = TypeInt::new($this);
         $type->required($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.required"));
         $type->addRule(Rules::notNull($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notNull")));
         $type->addRule(Rules::notEmptyString($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notEmptyString")));
@@ -78,8 +79,8 @@ final class TypeBool extends TypeScalar
         $options = Helpers::getOptions($options);
         $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('boolToInt');
 
-        $ruleID = Transformers::ID_BOOL_TO_STRING;
-        $type = (new TypeString())->from($this);
+        $ruleID = TransformersEnum::ID_BOOL_TO_STRING->value;
+        $type = TypeString::new($this);
         $type->required($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.required"));
         $type->addRule(Rules::notNull($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notNull")));
         $type->addRule(Rules::notEmptyString($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notEmptyString")));

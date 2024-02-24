@@ -1,5 +1,9 @@
 <?php
 
+use Kedniko\Vivy\V;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Messages\Error;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -14,6 +18,10 @@
 // uses(Tests\TestCase::class)->in('Feature');
 
 uses()->group('Unit')->in('Unit');
+
+Error::setLocale('it');
+V::registerPlugin(new \Kedniko\VivyPluginStandard\StandardLibrary());
+Error::addPath(Util::basePath('src/lang'));
 
 /*
 |--------------------------------------------------------------------------

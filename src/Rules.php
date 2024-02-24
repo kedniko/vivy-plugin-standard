@@ -1,102 +1,28 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
-use Brick\Math\BigDecimal;
 use DateTime;
-use Kedniko\Vivy\Contracts\ContextInterface;
-use Kedniko\Vivy\Core\Constants;
+use Brick\Math\BigDecimal;
+use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Support\Str;
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Core\Constants;
 use Kedniko\Vivy\Core\Undefined;
-use Kedniko\Vivy\Exceptions\VivyMiddlewareNotFoundException;
 use Kedniko\Vivy\Messages\RuleMessage;
-use Kedniko\Vivy\Support\Str;
+use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\VivyPluginStandard\Enum\RulesEnum;
+use Kedniko\Vivy\Exceptions\VivyMiddlewareNotFoundException;
 
 final class Rules
 {
-    public const ID_REQUIRED = 'required';
-
-    public const ID_NOT_EMPTY_STRING = 'notEmptyString';
-
-    public const ID_NOT_NULL = 'notNull';
-
-    public const ID_NULL = 'null';
-
-    public const ID_GROUP = 'group';
-
-    public const ID_EACH = 'each';
-
-    public const ID_OR = 'or';
-
-    public const ID_AND = 'and';
-
-    public const ID_NOT_FALSY = 'notFalsy';
-
-    public const ID_EMPTY_STRING = 'emptyString';
-
-    public const ID_MIN_DATE = 'minDate';
-
-    public const ID_MAX_DATE = 'maxDate';
-
-    public const ID_DATE_BETWEEN = 'dateBetween';
-
-    public const ID_DATE_NOT_BETWEEN = 'dateNotBetween';
-
-    public const ID_STRING = 'string';
-
-    public const ID_INTSTRING = 'intString';
-
-    public const ID_DIGITS_STRING = 'digitsString';
-
-    public const ID_INTBOOL = 'intBool';
-
-    public const ID_FILE = 'file';
-
-    public const ID_INT = 'int';
-
-    public const ID_FLOAT = 'float';
-
-    public const ID_NUMBER = 'number';
-
-    public const ID_FLOAT_OR_INT = 'floatOrInt';
-
-    public const ID_FLOAT_STRING = 'floatString';
-
-    public const ID_BOOL = 'bool';
-
-    public const ID_BOOL_STRING = 'boolString';
-
-    public const ID_EMAIL = 'email';
-
-    public const ID_PHONE = 'phone';
-
-    public const ID_DATE = 'date';
-
-    public const ID_MIN = 'min';
-
-    public const ID_MAX = 'max';
-
-    public const ID_ARRAY = 'array';
-
-    public const ID_SCALAR = 'scalar';
-
-    public const ID_IN_ARRAY = 'inArray';
-
-    public const ID_NOT_IN_ARRAY = 'notInArray';
-
-    public const ID_UNDEFINED = 'undefined';
-
-    public const ID_SET_VALUE = 'setValue';
-
-    public const ID_INT_STRING = 'intString';
 
     public static function getInvisibleKeys(): array
     {
         return [
-            self::ID_GROUP,
-            self::ID_EACH,
+            RulesEnum::ID_GROUP->value,
+            RulesEnum::ID_EACH->value,
         ];
     }
 
@@ -131,7 +57,7 @@ final class Rules
 
     public static function required(string|callable $errormessage = null): Rule
     {
-        $ruleID = Rules::ID_REQUIRED;
+        $ruleID = RulesEnum::ID_REQUIRED->value;
         $ruleFn = null;
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
 
@@ -140,7 +66,7 @@ final class Rules
 
     public static function notFalsy(string|callable $errormessage = null): Rule
     {
-        $ruleID = Rules::ID_NOT_FALSY;
+        $ruleID = RulesEnum::ID_NOT_FALSY->value;
         $ruleFn = fn (ContextInterface $c): bool => (bool) $c->value;
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
 
@@ -149,7 +75,7 @@ final class Rules
 
     public static function notNull(string|callable $errormessage = null): Rule
     {
-        $ruleID = Rules::ID_NOT_NULL;
+        $ruleID = RulesEnum::ID_NOT_NULL->value;
         $ruleFn = fn (ContextInterface $c): bool => $c->value !== null;
 
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
@@ -159,7 +85,7 @@ final class Rules
 
     public static function null(string|callable $errormessage = null): Rule
     {
-        $ruleID = Rules::ID_NULL;
+        $ruleID = RulesEnum::ID_NULL->value;
         $ruleFn = fn (ContextInterface $c): bool => $c->value === null;
 
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
@@ -169,7 +95,7 @@ final class Rules
 
     public static function notEmptyString(bool $trim = false, string|callable $errormessage = null): Rule
     {
-        $ruleID = Rules::ID_NOT_EMPTY_STRING;
+        $ruleID = RulesEnum::ID_NOT_EMPTY_STRING->value;
         $ruleFn = function (ContextInterface $c) use ($trim): bool {
             $trim = Helpers::valueOrFunction($trim, $c);
             $value = $c->value;
@@ -190,7 +116,7 @@ final class Rules
 
     public static function emptyString(bool $trim = false, string|callable $errormessage = null): Rule
     {
-        $ruleID = Rules::ID_EMPTY_STRING;
+        $ruleID = RulesEnum::ID_EMPTY_STRING->value;
         $ruleFn = function (ContextInterface $c) use ($trim): bool {
             $trim = Helpers::valueOrFunction($trim, $c);
             $value = $c->value;
@@ -211,7 +137,7 @@ final class Rules
 
     public static function string(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_STRING;
+        $ruleID = RulesEnum::ID_STRING->value;
         $ruleFn = function (ContextInterface $c): bool {
             $value = $c->value;
             return is_string($value);
@@ -224,7 +150,7 @@ final class Rules
 
     public static function digitsString(bool $trim = false, string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_DIGITS_STRING;
+        $ruleID = RulesEnum::ID_DIGITS_STRING->value;
         $ruleFn = function (ContextInterface $c) use ($trim): bool {
             $trim = Helpers::valueOrFunction($trim, $c);
             $value = $c->value;
@@ -246,7 +172,7 @@ final class Rules
 
     public static function intString(bool $trim = false, string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_INTSTRING;
+        $ruleID = RulesEnum::ID_INTSTRING->value;
         $ruleFn = function (ContextInterface $c) use ($trim): bool {
             $trim = Helpers::valueOrFunction($trim, $c);
             $value = $c->value;
@@ -261,7 +187,7 @@ final class Rules
 
     public static function boolString(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_BOOL_STRING;
+        $ruleID = RulesEnum::ID_BOOL_STRING->value;
         $ruleFn = fn (ContextInterface $c): bool => in_array($c->value, ['true', 'false'], true);
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
 
@@ -270,7 +196,7 @@ final class Rules
 
     public static function intBool(bool $strict = false, string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_INTBOOL;
+        $ruleID = RulesEnum::ID_INTBOOL->value;
         $ruleFn = function (ContextInterface $c) use ($strict): bool|int {
             $strict = Helpers::valueOrFunction($strict, $c);
             if ($strict) {
@@ -287,7 +213,7 @@ final class Rules
 
     public static function file(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_FILE;
+        $ruleID = RulesEnum::ID_FILE->value;
         $ruleFn = function (ContextInterface $c): bool {
             $value = $c->value;
 
@@ -306,7 +232,7 @@ final class Rules
 
     public static function int(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_INT;
+        $ruleID = RulesEnum::ID_INT->value;
         $ruleFn = fn (ContextInterface $c): bool => is_int($c->value);
 
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
@@ -329,7 +255,7 @@ final class Rules
 
     public static function floatOrInt(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_FLOAT_OR_INT;
+        $ruleID = RulesEnum::ID_FLOAT_OR_INT->value;
         $ruleFn = fn (ContextInterface $c): bool => is_float($c->value) || is_int($c->value);
 
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
@@ -339,7 +265,7 @@ final class Rules
 
     public static function number(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_NUMBER;
+        $ruleID = RulesEnum::ID_NUMBER->value;
         $ruleFn = fn (ContextInterface $c): bool => !is_string($c->value) && is_numeric($c->value);
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
 
@@ -348,7 +274,7 @@ final class Rules
 
     public static function float(bool $strictFloat = true, string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_FLOAT;
+        $ruleID = RulesEnum::ID_FLOAT->value;
         $ruleFn = function (ContextInterface $c) use ($strictFloat): bool {
             $strictFloat = Helpers::valueOrFunction($strictFloat, $c);
             if ($strictFloat) {
@@ -365,7 +291,7 @@ final class Rules
 
     public static function floatString(bool $strictFloat = true, bool $trim = false, string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_FLOAT_STRING;
+        $ruleID = RulesEnum::ID_FLOAT_STRING->value;
         $ruleFn = function (ContextInterface $c) use ($strictFloat, $trim) {
             $strictFloat = Helpers::valueOrFunction($strictFloat, $c);
             $trim = Helpers::valueOrFunction($trim, $c);
@@ -414,7 +340,7 @@ final class Rules
 
     public static function numberString(bool $trim = false, string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_FLOAT_STRING;
+        $ruleID = RulesEnum::ID_FLOAT_STRING->value;
         $ruleFn = function (ContextInterface $c) use ($trim): bool {
             $trim = Helpers::valueOrFunction($trim, $c);
             if (!is_string($c->value)) {
@@ -434,7 +360,7 @@ final class Rules
 
     public static function undefined(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_UNDEFINED;
+        $ruleID = RulesEnum::ID_UNDEFINED->value;
         $ruleFn = fn (): \Kedniko\Vivy\Core\Undefined => Undefined::instance();
 
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
@@ -444,7 +370,7 @@ final class Rules
 
     public static function bool(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_BOOL;
+        $ruleID = RulesEnum::ID_BOOL->value;
         $ruleFn = fn (ContextInterface $c): bool => is_bool($c->value);
 
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
@@ -454,7 +380,7 @@ final class Rules
 
     public static function email(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_EMAIL;
+        $ruleID = RulesEnum::ID_EMAIL->value;
         $ruleFn = function (ContextInterface $c): bool {
             if (!$c->value) {
                 return false;
@@ -503,7 +429,7 @@ final class Rules
 
     public static function phone(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_PHONE;
+        $ruleID = RulesEnum::ID_PHONE->value;
         $ruleFn = function (ContextInterface $c): bool {
             if (!$c->value) {
                 return false;
@@ -525,7 +451,7 @@ final class Rules
      */
     public static function date(string $format = 'Y-m-d', string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_DATE;
+        $ruleID = RulesEnum::ID_DATE->value;
         $ruleFn = function (ContextInterface $c) use ($format): bool {
             $format = Helpers::valueOrFunction($format, $c);
             if (!$c->value) {
@@ -549,7 +475,7 @@ final class Rules
 
     public static function min(\Brick\Math\BigNumber|int|float|string $min, string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_MIN;
+        $ruleID = RulesEnum::ID_MIN->value;
         $ruleFn = function (ContextInterface $c) use ($min): bool {
             try {
                 $min = Helpers::valueOrFunction($min, $c);
@@ -567,7 +493,7 @@ final class Rules
 
     public static function max(\Brick\Math\BigNumber|int|float|string $max, string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_MAX;
+        $ruleID = RulesEnum::ID_MAX->value;
         $ruleFn = function (ContextInterface $c) use ($max): bool {
             try {
                 $max = Helpers::valueOrFunction($max, $c);
@@ -585,7 +511,7 @@ final class Rules
 
     public static function minDate(Datetime $date, string $sourceFormat = 'Y-m-d', string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_MIN_DATE;
+        $ruleID = RulesEnum::ID_MIN_DATE->value;
         $ruleFn = function (ContextInterface $c) use ($date, $sourceFormat): bool {
             $date = Helpers::valueOrFunction($date, $c);
             $sourceFormat = Helpers::valueOrFunction($sourceFormat, $c);
@@ -605,7 +531,7 @@ final class Rules
 
     public static function maxDate(Datetime $date, string $sourceFormat = 'Y-m-d', string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_MAX_DATE;
+        $ruleID = RulesEnum::ID_MAX_DATE->value;
         $ruleFn = function (ContextInterface $c) use ($date, $sourceFormat): bool {
             $date = Helpers::valueOrFunction($date, $c);
             $sourceFormat = Helpers::valueOrFunction($sourceFormat, $c);
@@ -625,7 +551,7 @@ final class Rules
 
     public static function between(Datetime $minDate, Datetime $maxDate, string $sourceFormat = 'Y-m-d', string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_DATE_BETWEEN;
+        $ruleID = RulesEnum::ID_DATE_BETWEEN->value;
         $ruleFn = function (ContextInterface $c) use ($minDate, $maxDate, $sourceFormat): bool {
             $minDate = Helpers::valueOrFunction($minDate, $c);
             $maxDate = Helpers::valueOrFunction($maxDate, $c);
@@ -646,7 +572,7 @@ final class Rules
 
     public static function notBetween(Datetime $minDate, Datetime $maxDate, string $sourceFormat = 'Y-m-d', string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_DATE_BETWEEN;
+        $ruleID = RulesEnum::ID_DATE_BETWEEN->value;
         $ruleFn = function (ContextInterface $c) use ($minDate, $maxDate, $sourceFormat): bool {
             $minDate = Helpers::valueOrFunction($minDate, $c);
             $maxDate = Helpers::valueOrFunction($maxDate, $c);
@@ -667,7 +593,7 @@ final class Rules
 
     public static function array(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_ARRAY;
+        $ruleID = RulesEnum::ID_ARRAY->value;
         $ruleFn = fn (ContextInterface $c): bool => is_array($c->value);
 
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
@@ -677,7 +603,7 @@ final class Rules
 
     public static function scalar(string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_SCALAR;
+        $ruleID = RulesEnum::ID_SCALAR->value;
         $ruleFn = fn (ContextInterface $c): bool => is_scalar($c->value);
 
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
@@ -687,7 +613,7 @@ final class Rules
 
     public static function in(array $array, bool $strict = true, string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_IN_ARRAY;
+        $ruleID = RulesEnum::ID_IN_ARRAY->value;
         $ruleFn = function (ContextInterface $c) use ($array, $strict): bool {
             $array = Helpers::valueOrFunction($array, $c);
             $strict = Helpers::valueOrFunction($strict, $c);
@@ -702,7 +628,7 @@ final class Rules
 
     public static function notInArray(array $array, string|callable $errormessage = null): Rule
     {
-        $ruleID = self::ID_NOT_IN_ARRAY;
+        $ruleID = RulesEnum::ID_NOT_IN_ARRAY->value;
         $ruleFn = function (ContextInterface $c) use ($array): bool {
             $array = Helpers::valueOrFunction($array, $c);
 

@@ -1,21 +1,23 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
 use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Contracts\TypeInterface;
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\LinkedList;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Core\OrContext;
 use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Core\Validated;
+use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 use Kedniko\Vivy\Support\TypeProxy;
 use Kedniko\Vivy\Support\Util;
 
 final class TypeOr extends Type
 {
     /**
-     * @param  Type[]  $types
+     * @param  TypeInterface[]  $types
      */
     public function init(array $types, bool $isNot = false, Options $options = null)
     {
@@ -42,12 +44,12 @@ final class TypeOr extends Type
     }
 
     /**
-     * @param  Type[]  $types
+     * @param  TypeInterface[]  $types
      * @param  bool  $isNot - true = all rule false. false = any rule true
      */
     private function getOrRule(array $types, bool $isNot, mixed $errormessage = null): Rule
     {
-        $ruleID = Rules::ID_OR;
+        $ruleID = RulesEnum::ID_OR->value;
         $types = new LinkedList($types);
         $ruleFn = function (ContextInterface $c) use (&$types, $isNot): bool|\Kedniko\Vivy\Core\Validated {
             $all_errors = [];

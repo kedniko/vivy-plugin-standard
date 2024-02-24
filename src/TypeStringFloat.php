@@ -1,6 +1,6 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\Options;
@@ -22,6 +22,6 @@ final class TypeStringFloat extends TypeStringNumber
         $transformer = Transformers::stringToInt($errormessage);
         $this->addTransformer($transformer, $options);
 
-        return (new TypeInt())->from($this);
+        return TypeInt::new($this);
     }
 }

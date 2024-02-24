@@ -1,8 +1,9 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
 use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Contracts\TypeInterface;
 use Kedniko\Vivy\Core\GroupContext;
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\LinkedList;
@@ -12,8 +13,8 @@ use Kedniko\Vivy\Core\Undefined;
 use Kedniko\Vivy\Core\Validated;
 use Kedniko\Vivy\Exceptions\VivyException;
 use Kedniko\Vivy\Messages\RuleMessage;
+use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 use Kedniko\Vivy\Support\TypeProxy;
-use Kedniko\Vivy\Type;
 use Kedniko\Vivy\V;
 
 final class TypeGroup extends TypeCompound
@@ -21,7 +22,7 @@ final class TypeGroup extends TypeCompound
     public function init(array|callable $setup = null)
     {
         if (!$setup) {
-            return;
+            return $this;
         }
 
         if (is_array($setup)) {
@@ -34,19 +35,12 @@ final class TypeGroup extends TypeCompound
         return $this;
     }
 
-    // public function group($setup = null, bool $stopOnFieldFailure = false, Options $options = null)
-    // {
-    // 	$options = Options::build($options, func_get_args());
-    // 	Helpers::assertTrueOrFail(is_bool($stopOnFieldFailure), '$stopOnFieldFailure is not a bool');
-    // 	$this->addRule($this->groupRule($stopOnFieldFailure, $options->getErrorMessage()), $options);
-    // 	return $this;
-    // }
     /**
      * @param  LinkedList|callable  $types
      */
     public function getGroupRule(bool $stopOnFieldFailure, mixed $errormessage): Rule
     {
-        $ruleID = Rules::ID_GROUP;
+        $ruleID = RulesEnum::ID_GROUP->value;
         $ruleFn = function (ContextInterface $c) use ($stopOnFieldFailure): \Kedniko\Vivy\Core\Validated {
             $typeFields = $this->getFieldsFromState($c);
 
@@ -63,7 +57,7 @@ final class TypeGroup extends TypeCompound
                 $hasNextMiddleare = $middlewares->hasNext();
                 if ($hasNextMiddleare) {
                     $nextMiddleware = $middlewares->getNext();
-                    $nextIsUndefined = $nextMiddleware instanceof Rule && $nextMiddleware->getID() === Rules::ID_UNDEFINED;
+                    $nextIsUndefined = $nextMiddleware instanceof Rule && $nextMiddleware->getID() === RulesEnum::ID_UNDEFINED->value;
                 } else {
                     $nextIsUndefined = false;
                 }
@@ -186,7 +180,7 @@ final class TypeGroup extends TypeCompound
                 $type = $this->buildFieldFromCallable($type);
             } elseif (is_array($type)) {
                 $type = $this->buildFieldFromArray($type);
-            } elseif ($type instanceof Type) {
+            } elseif ($type instanceof TypeInterface) {
                 // do nothing
             } else {
                 throw new VivyException('Unknown setup type: ' . gettype($type));
@@ -205,7 +199,7 @@ final class TypeGroup extends TypeCompound
     private function applyRuleOnField(string $rule, TypeAny $type): void
     {
         if ($rule === 'optional') {
-            $type->optional();
+            // $type->optional();
         }
         if ($rule === 'string') {
             $type->string();
@@ -256,11 +250,11 @@ final class TypeGroup extends TypeCompound
 
     /**
      * @param  string  $fieldname
-     * @param  Type  $type
+     * @param  TypeInterface  $type
      */
     public function addField($fieldname, $type)
     {
-        /** @var LinkedList[Type] $types */
+        /** @var LinkedList[TypeInterface] $types */
         $types = $this->state->getFields();
         (new TypeProxy($type))->setName($fieldname);
         $types->append($type);

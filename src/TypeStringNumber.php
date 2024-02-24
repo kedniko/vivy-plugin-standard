@@ -1,6 +1,6 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
 class TypeStringNumber extends TypeString
 {

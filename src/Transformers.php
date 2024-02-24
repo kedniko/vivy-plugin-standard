@@ -1,46 +1,21 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Contracts\ContextInterface;
-use Kedniko\Vivy\Core\Constants;
-use Kedniko\Vivy\Exceptions\VivyTransformerException;
-use Kedniko\Vivy\Messages\TransformerMessage;
 use Kedniko\Vivy\Transformer;
+use Kedniko\Vivy\Core\Constants;
+use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Messages\TransformerMessage;
+use Kedniko\Vivy\Exceptions\VivyTransformerException;
+use Kedniko\VivyPluginStandard\Enum\TransformersEnum;
 
 final class Transformers
 {
-    public const ID_STRING_TO_BOOL = 'stringToBool';
 
-    public const ID_STRING_TO_INT = 'stringToInt';
-
-    public const ID_BOOL_TO_INT = 'boolToInt';
-
-    public const ID_BOOL_TO_STRING = 'boolToString';
-
-    public const ID_INT_TO_STRING = 'intToString';
-
-    public const ID_INT_TO_BOOL = 'intToBool';
-
-    public const ID_TRIM = 'trim';
-
-    public const ID_LTRIM = 'ltrim';
-
-    public const ID_RTRIM = 'rtrim';
-
-    public const ID_TO_UPPER_CASE = 'toUpperCase';
-
-    public const ID_TO_LOWER_CASE = 'toLowerCase';
-
-    public const ID_FIRST_LETTER_UPPER_CASE = 'firstLetterUpperCase';
-
-    public const ID_FIRST_LETTER_LOWER_CASE = 'firstLetterLowerCase';
-
-    public const ID_NUMBER_TO_STRING = 'numberToString';
 
     public static function trim($characters = " \t\n\r\0\x0B", $errormessage = null): Transformer
     {
-        $transformerID = self::ID_TRIM;
+        $transformerID = TransformersEnum::ID_TRIM->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c) use ($characters): ?string {
@@ -58,7 +33,7 @@ final class Transformers
 
     public static function ltrim($characters = " \t\n\r\0\x0B", $errormessage = null): Transformer
     {
-        $transformerID = self::ID_LTRIM;
+        $transformerID = TransformersEnum::ID_LTRIM->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c) use ($characters): string {
@@ -73,7 +48,7 @@ final class Transformers
 
     public static function rtrim($characters = " \t\n\r\0\x0B", $errormessage = null): Transformer
     {
-        $transformerID = self::ID_RTRIM;
+        $transformerID = TransformersEnum::ID_RTRIM->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c) use ($characters): string {
@@ -88,7 +63,7 @@ final class Transformers
 
     public static function toUpperCase($errormessage = null): Transformer
     {
-        $transformerID = self::ID_TO_UPPER_CASE;
+        $transformerID = TransformersEnum::ID_TO_UPPER_CASE->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c): string {
@@ -103,7 +78,7 @@ final class Transformers
 
     public static function toLowerCase($errormessage = null): Transformer
     {
-        $transformerID = self::ID_TO_LOWER_CASE;
+        $transformerID = TransformersEnum::ID_TO_LOWER_CASE->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c): string {
@@ -118,7 +93,7 @@ final class Transformers
 
     public static function firstLetterUpperCase($errormessage = null): Transformer
     {
-        $transformerID = self::ID_FIRST_LETTER_UPPER_CASE;
+        $transformerID = TransformersEnum::ID_FIRST_LETTER_UPPER_CASE->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c): string {
@@ -133,7 +108,7 @@ final class Transformers
 
     public static function firstLetterLowerCase($errormessage = null): Transformer
     {
-        $transformerID = self::ID_FIRST_LETTER_LOWER_CASE;
+        $transformerID = TransformersEnum::ID_FIRST_LETTER_LOWER_CASE->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c): string {
@@ -155,7 +130,7 @@ final class Transformers
      */
     public static function stringToInt($errormessage = null): Transformer
     {
-        $transformerID = self::ID_STRING_TO_INT;
+        $transformerID = TransformersEnum::ID_STRING_TO_INT->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c): int {
@@ -176,7 +151,7 @@ final class Transformers
 
     public static function stringBoolToBool($errormessage = null): Transformer
     {
-        $transformerID = self::ID_STRING_TO_BOOL;
+        $transformerID = TransformersEnum::ID_STRING_TO_BOOL->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c): bool {
@@ -196,7 +171,7 @@ final class Transformers
 
     public static function intToString($errormessage = null): Transformer
     {
-        $transformerID = self::ID_INT_TO_STRING;
+        $transformerID = TransformersEnum::ID_INT_TO_STRING->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c) {
@@ -216,7 +191,7 @@ final class Transformers
 
     public static function numberToString($errormessage = null): Transformer
     {
-        $transformerID = self::ID_NUMBER_TO_STRING;
+        $transformerID = TransformersEnum::ID_NUMBER_TO_STRING->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c) {
@@ -236,7 +211,7 @@ final class Transformers
 
     public static function boolToInt($errormessage = null): Transformer
     {
-        $transformerID = self::ID_BOOL_TO_INT;
+        $transformerID = TransformersEnum::ID_BOOL_TO_INT->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c): int {
@@ -252,7 +227,7 @@ final class Transformers
 
     public static function boolToString($errormessage = null): Transformer
     {
-        $transformerID = self::ID_BOOL_TO_STRING;
+        $transformerID = TransformersEnum::ID_BOOL_TO_STRING->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c): string {

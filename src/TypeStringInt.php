@@ -1,6 +1,6 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
 use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\Core\Helpers;
@@ -43,6 +43,6 @@ final class TypeStringInt extends TypeStringNumber
         $transformer = Transformers::stringToInt($errormessage);
         $this->addTransformer($transformer, $options);
 
-        return (new TypeInt())->from($this);
+        return TypeInt::new($this);
     }
 }

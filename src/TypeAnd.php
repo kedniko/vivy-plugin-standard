@@ -1,18 +1,20 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
 use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Contracts\TypeInterface;
 use Kedniko\Vivy\Core\LinkedList;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Core\Validated;
+use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 use Kedniko\Vivy\Support\Util;
 
 final class TypeAnd extends Type
 {
     /**
-     * @param  Type[]  $types
+     * @param  TypeInterface[]  $types
      */
     public function __construct(array $types, $isNot = false, Options $options = null)
     {
@@ -30,12 +32,12 @@ final class TypeAnd extends Type
     }
 
     /**
-     * @param  Type[]  $types
+     * @param  TypeInterface[]  $types
      * @param  bool  $isNot - true = all rule false. false = any rule true
      */
     private function getAndRule(array $types, $isNot, string $errormessage = null): Rule
     {
-        $ruleID = Rules::ID_AND;
+        $ruleID = RulesEnum::ID_AND->value;
         $types = new LinkedList($types);
         $ruleFn = function (ContextInterface $c) use (&$types, $isNot): bool|\Kedniko\Vivy\Core\Validated {
             $errors = [];
@@ -44,7 +46,7 @@ final class TypeAnd extends Type
             while ($types->hasNext()) {
                 $type = $types->getNext();
 
-                if (!$type instanceof Type) {
+                if (!$type instanceof TypeInterface) {
                     $type = new TypeAny();
                     $type->addRule(Rules::email());
                 }

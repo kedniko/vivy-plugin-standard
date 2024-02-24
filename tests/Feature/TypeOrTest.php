@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use App\App;
 use DateTime;
 use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\O;
@@ -10,9 +9,6 @@ use Kedniko\Vivy\V;
 
 uses()->group('or');
 
-beforeAll(function () {
-    App::boot();
-});
 
 test('dates', function () {
     $v = V::group([

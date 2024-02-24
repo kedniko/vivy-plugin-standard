@@ -2,16 +2,12 @@
 
 namespace Tests;
 
-use App\App;
 use Kedniko\Vivy\O;
 use Kedniko\Vivy\V;
 use Kedniko\Vivy\ArrayContext;
 
 uses()->group('file');
 
-beforeAll(function () {
-    App::boot();
-});
 
 test('valid-files', function () {
     $v = V::group([

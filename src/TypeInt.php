@@ -1,6 +1,6 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
 use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\Exceptions\VivyTransformerException;
@@ -9,9 +9,6 @@ use Kedniko\Vivy\Transformer;
 
 final class TypeInt extends TypeNumber
 {
-    /**
-     * @var string
-     */
     private const TRANSFORMER_ID = 'intToBool';
 
     public function toBool($strict = true, $errormessage = null)
@@ -20,7 +17,7 @@ final class TypeInt extends TypeNumber
 
         $this->addRule(Rules::intBool($strict));
 
-        $type = (new TypeBool())->from($this);
+        $type = TypeBool::new($this);
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage(self::TRANSFORMER_ID);
         $transformer = new Transformer(self::TRANSFORMER_ID, function (ContextInterface $c) use ($strict): bool {
             $value = $c->value;

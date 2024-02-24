@@ -2,14 +2,24 @@
 
 namespace Tests;
 
-use App\App;
 use Kedniko\Vivy\O;
 use Kedniko\Vivy\V;
 
 uses()->group('group');
 
-beforeAll(function () {
-    App::boot();
+
+test('group-0', function () {
+    $v = V::group([
+        'nome' => V::string()->minLength(4)->maxLength(10),
+        'cognome' => V::string()->length(5),
+        'age' => V::int()->min(18)->max(99),
+    ]);
+    $validated = $v->validate([
+        'nome' => '1234567890',
+        'cognome' => '12345',
+        'age' => 99,
+    ]);
+    expect($validated->isValid())->toBeTrue();
 });
 
 test('group-1', function () {
@@ -96,4 +106,53 @@ test('group-2', function () {
 
     expect($is_valid)->toBeFalse();
     expect($errors)->toBe($expectedErrors);
+});
+
+test('group-3', function () {
+    $validated = V::group([
+        'sale_group' => V::string(O::continueOnFailure())->asAny()->int(),
+        'sale_id' => V::string(),
+        'exclude_taxes' => V::bool(),
+        'dates' => V::array()->maxCount(5)->each(V::date('Y-m-d')),
+        'rows' => V::array()->each([
+            'discount' => V::float(),
+            'duration' => V::int(),
+            'operator_id' => V::string(),
+            'price_single' => V::number(),
+            'product_id' => V::string(),
+            'quantity' => V::int(),
+        ]),
+    ])->validate([
+        'sale_group' => 21.1,
+        'id' => null,
+        'exclude_taxes' => true,
+        'sale_dates' => [],
+        'rows' => [
+            [
+                'discount' => 21.21,
+                'duration' => 0,
+                'operator_id' => '4386578437465',
+                'price_single' => 20.00,
+                'product_id' => '754389758',
+                'quantity' => 4,
+            ],
+        ],
+    ]);
+
+    $expectedErrors = [
+        'sale_group' => [
+            'string' => ['Validazione fallita'],
+            'int' => ['Validazione fallita'],
+        ],
+        'sale_id' => [
+            'required' => ['Questo campo è obbligatorio'],
+        ],
+        'dates' => [
+            'required' => ['Questo campo è obbligatorio'],
+        ],
+    ];
+
+    expect($validated->isValid())->toBeFalse();
+    $err = $validated->errors();
+    expect($err)->toBe($expectedErrors);
 });

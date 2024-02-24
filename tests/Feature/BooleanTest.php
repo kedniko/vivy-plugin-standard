@@ -2,14 +2,10 @@
 
 namespace Tests;
 
-use App\App;
 use Kedniko\Vivy\V;
 
 uses()->group('bool');
 
-beforeAll(function () {
-    App::boot();
-});
 
 test('bool', function () {
     expect(V::bool()->validate(true)->isValid())->toBeTrue();

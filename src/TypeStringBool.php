@@ -1,6 +1,6 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\Options;
@@ -15,6 +15,6 @@ final class TypeStringBool extends TypeString
         $transformer = Transformers::stringBoolToBool($errormessage);
         $this->addTransformer($transformer, $options);
 
-        return (new TypeBool())->from($this);
+        return TypeBool::new($this);
     }
 }

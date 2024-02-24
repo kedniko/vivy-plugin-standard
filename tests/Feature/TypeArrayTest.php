@@ -2,15 +2,12 @@
 
 namespace Tests;
 
-use App\App;
 use Kedniko\Vivy\ArrayContext;
 use Kedniko\Vivy\V;
 
 $faker = \Faker\Factory::create();
 uses()->group('array');
-beforeAll(function () {
-    App::boot();
-});
+
 
 test('array-int', function () {
 

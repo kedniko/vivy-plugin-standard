@@ -1,14 +1,14 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
 use Kedniko\Vivy\ArrayContext;
 use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Contracts\TypeInterface;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Core\Validated;
 use Kedniko\Vivy\Transformer;
-use Kedniko\Vivy\Type;
 
 final class TypeFiles extends TypeCompound
 {
@@ -183,7 +183,7 @@ final class TypeFiles extends TypeCompound
         return $this;
     }
 
-    private function getEachRule(Type $type, bool|callable $stopOnItemFailure, $errormessage): Rule
+    private function getEachRule(TypeInterface $type, bool|callable $stopOnItemFailure, $errormessage): Rule
     {
         $ruleFn = function (ContextInterface $c) use ($type, $stopOnItemFailure): \Kedniko\Vivy\Core\Validated {
             if (!is_array($c->value)) {
@@ -280,23 +280,4 @@ final class TypeFiles extends TypeCompound
 
         return $newFiles;
     }
-
-    // public function group($setup, Options $options = null)
-    // {
-    // 	$options = Helpers::getOptions($options);
-
-    // 	$type = new BasicGroup($setup, $options);
-
-    // 	$type->addRule(Rules::notNull($options->getErrormessage() ?: RuleMessage::getErrorMessage('group.notNull')), $options);
-    // 	$type->addRule(Rules::notEmptyString($options->getErrormessage() ?: RuleMessage::getErrorMessage('group.notEmptyString')), $options);
-    // 	$type->addRule(Rules::array($options->getErrormessage()), $options);
-
-    // 	/** @var LinkedList $types */
-    // 	$types = (new TypeProxy($type))->getChildState()->getFields();
-    // 	$type->group($types, true, $options);
-
-    // 	// share state
-    // 	$type->state = $this->state;
-    // 	return $type;
-    // }
 }

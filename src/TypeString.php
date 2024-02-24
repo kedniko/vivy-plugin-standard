@@ -1,6 +1,8 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+declare(strict_types=1);
+
+namespace Kedniko\VivyPluginStandard;
 
 use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\Core\Helpers;
@@ -160,7 +162,7 @@ class TypeString extends TypeScalar
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('boolString.type');
         $this->addRule(Rules::boolString($errormessage), $options);
 
-        return (new TypeStringBool())->from($this);
+        return TypeStringBool::new($this);
     }
 
     // Rules

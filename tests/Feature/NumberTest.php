@@ -2,14 +2,10 @@
 
 namespace Tests;
 
-use App\App;
 use Kedniko\Vivy\V;
 
 uses()->group('number');
 
-beforeAll(function () {
-    App::boot();
-});
 
 test('number-int', function () {
     expect(V::int()->validate(10)->isValid())->toBeTrue();
@@ -81,8 +77,4 @@ test('string-digits', function () {
     expect(V::string()->digits()->validate('3312345678900032432047328')->isValid())->toBeTrue();
     expect(V::string()->digits()->validate('00324320.47328')->isValid())->toBeFalse();
     expect(V::string()->digits()->validate('32432047328e5')->isValid())->toBeFalse();
-});
-
-test('setValue', function () {
-    expect(V::int()->setValue(fn ($c) => $c->value / 100)->validate(10)->value())->toBe(10 / 100);
 });

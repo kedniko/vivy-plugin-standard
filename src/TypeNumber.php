@@ -1,6 +1,6 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
 use Brick\Math\BigDecimal;
 use Kedniko\Vivy\Contracts\ContextInterface;
@@ -181,6 +181,6 @@ class TypeNumber extends TypeScalar
         $transformer = Transformers::numberToString($errormessage);
         $this->addTransformer($transformer);
 
-        return (new TypeString())->from($this);
+        return TypeString::new($this);
     }
 }

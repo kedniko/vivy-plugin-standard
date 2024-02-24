@@ -1,20 +1,14 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
+use Kedniko\Vivy\Type as CoreType;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Messages\RuleMessage;
+use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 
-class Type extends \Kedniko\Vivy\Type
+class Type extends CoreType
 {
-    // public function string(Options $options = null)
-    // {
-    // 	$options = Options::build($options, func_get_args());
-    // 	$type = new TypeString();
-    // 	$type->state = $caller->state; // share state
-    // 	$type->addRule(Rules::string($options->getErrormessage()), $options);
-    // 	return $type;
-    // }
 
     public function equals(mixed $value, bool $strict = true, Options $options = null)
     {
@@ -36,7 +30,7 @@ class Type extends \Kedniko\Vivy\Type
 
     public function allowNull()
     {
-        $this->removeRule(Rules::ID_NOT_NULL);
+        $this->removeRule(RulesEnum::ID_NOT_NULL->value);
         $this->state->setNotNull(false);
 
         return $this;

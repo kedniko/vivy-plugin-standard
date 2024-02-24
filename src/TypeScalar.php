@@ -1,13 +1,15 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Contracts\ContextInterface;
-use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Core\Options;
+use Kedniko\VivyPluginStandard\Type;
 use Kedniko\Vivy\Messages\RuleMessage;
+use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 
-class TypeScalar extends \Kedniko\Vivy\Plugin\Standard\Type
+class TypeScalar extends Type
 {
     public function in(array $array, Options $options = null)
     {
@@ -77,7 +79,7 @@ class TypeScalar extends \Kedniko\Vivy\Plugin\Standard\Type
 
     public function allowEmptyString()
     {
-        $this->removeRule(Rules::ID_NOT_EMPTY_STRING);
+        $this->removeRule(RulesEnum::ID_NOT_EMPTY_STRING->value);
         $this->state->setNotEmptyString(false);
 
         return $this;

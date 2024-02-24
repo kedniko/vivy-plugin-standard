@@ -1,15 +1,16 @@
 <?php
 
-namespace Kedniko\Vivy\Plugin\Standard;
+namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\ArrayContext;
-use Kedniko\Vivy\Contracts\ContextInterface;
-use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Core\Rule;
-use Kedniko\Vivy\Core\Validated;
-use Kedniko\Vivy\Transformer;
-use Kedniko\Vivy\Type;
 use Kedniko\Vivy\V;
+use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Transformer;
+use Kedniko\Vivy\ArrayContext;
+use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Core\Validated;
+use Kedniko\Vivy\Contracts\TypeInterface;
+use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 
 final class TypeArray extends TypeCompound
 {
@@ -78,7 +79,7 @@ final class TypeArray extends TypeCompound
         return $this;
     }
 
-    public function each(Type|array $type, bool|callable $stopOnItemFailure = false, Options $options = null)
+    public function each(TypeInterface|array $type, bool|callable $stopOnItemFailure = false, Options $options = null)
     {
         $options = Options::build($options, func_get_args());
 
@@ -92,9 +93,9 @@ final class TypeArray extends TypeCompound
         return $this;
     }
 
-    private function getEachRule(Type $type, bool|callable $stopOnItemFailure, $errormessage): Rule
+    private function getEachRule(TypeInterface $type, bool|callable $stopOnItemFailure, $errormessage): Rule
     {
-        $ruleID = Rules::ID_EACH;
+        $ruleID = RulesEnum::ID_EACH->value;
         $ruleFn = function (ContextInterface $c) use ($type, $stopOnItemFailure): \Kedniko\Vivy\Core\Validated {
             if (!is_array($c->value)) {
                 throw new \Exception('This is not an array. Got [' . gettype($c->value) . ']: ' . json_encode($c->value, JSON_THROW_ON_ERROR), 1);
