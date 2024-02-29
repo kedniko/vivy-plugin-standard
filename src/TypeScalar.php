@@ -11,20 +11,20 @@ use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 
 class TypeScalar extends Type
 {
-    public function in(array $array, Options $options = null)
+    public function in(array $array, bool $strict = true, Options $options = null)
     {
         $options = Options::build($options, func_get_args());
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('valuesNotAllowed');
-        $this->addRule(Rules::in($array, $errormessage), $options);
+        $this->addRule(Rules::inArray($array, $strict, $errormessage), $options);
 
         return $this;
     }
 
-    public function notInArray(array $array, Options $options = null)
+    public function notIn(array $array, bool $strict = true, Options $options = null)
     {
         $options = Options::build($options, func_get_args());
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('valuesNotAllowed');
-        $this->addRule(Rules::notInArray($array, $errormessage), $options);
+        $this->addRule(Rules::notInArray($array, $strict, $errormessage), $options);
 
         return $this;
     }
@@ -41,18 +41,8 @@ class TypeScalar extends Type
     {
         $options = Options::build($options, func_get_args());
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('regex');
-        $rule = new Rule($ruleID, function (ContextInterface $c) use ($regex): bool {
-            if (!$c->value) {
-                return false;
-            }
-            if (!is_string($c->value)) {
-                return false;
-            }
 
-            return preg_match($regex, $c->value, $matches) === 1;
-        }, $errormessage);
-
-        $this->addRule($rule, $options);
+        $this->addRule(Rules::regex($regex, $ruleID, $errormessage), $options);
 
         return $this;
     }
@@ -60,19 +50,9 @@ class TypeScalar extends Type
     public function notRegex($regex, $ruleID, Options $options = null)
     {
         $options = Options::build($options, func_get_args());
-        $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('regex');
-        $rule = new Rule($ruleID, function (ContextInterface $c) use ($regex): bool {
-            if (!$c->value) {
-                return false;
-            }
-            if (!is_string($c->value)) {
-                return false;
-            }
+        $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('notRegex');
 
-            return preg_match($regex, $c->value, $matches) !== 1;
-        }, $errormessage);
-
-        $this->addRule($rule, $options);
+        $this->addRule(Rules::notRegex($regex, $ruleID, $errormessage), $options);
 
         return $this;
     }

@@ -57,6 +57,7 @@ final class StandardLibrary implements VivyPlugin
             Registrar::make('floatString')->for([V::class, TypeAny::class])->callback([self::class, 'floatString'])->return(TypeStringFloat::class),
             Registrar::make('numberString')->for([V::class, TypeAny::class])->callback([self::class, 'numberString'])->return(TypeStringNumber::class),
             Registrar::make('email')->for([V::class, TypeAny::class])->callback([self::class, 'email'])->return(TypeStringEmail::class),
+            Registrar::make('in')->for([V::class, TypeAny::class])->callback([self::class, 'in'])->return(TypeScalar::class),
             Registrar::make('emptyString')->for([V::class, TypeAny::class])->callback([self::class, 'emptyString'])->return(TypeStringEmpty::class),
             Registrar::make('notEmptyString')->for([V::class, TypeAny::class])->callback([self::class, 'notEmptyString'])->return(TypeString::class),
             // [V::class, 'inArray', [Rules::class, 'inArray'], Type::class],
@@ -106,18 +107,23 @@ final class StandardLibrary implements VivyPlugin
         };
     }
 
-    /**
-     * @param  array|callable  $setup
-     */
-    public static function group($setup = null, bool $stopOnFieldFailure = false, Options $options = null)
+    public static function group(array|callable|TypeGroup $setup = null, bool $stopOnFieldFailure = false, Options $options = null)
     {
         return function (?TypeInterface $fromObj) use ($setup, $stopOnFieldFailure, $options) {
-            $options = Options::build($options, func_get_args());
-            $type = TypeGroup::new(from: $fromObj)->init($setup);
-            $type->addRule(Rules::array($options->getErrorMessage()), $options);
-            $type->addRule($type->getGroupRule($stopOnFieldFailure, $options->getErrorMessage()), $options);
+            if ($setup instanceof TypeGroup) {
+                return $setup;
+            }
 
-            return $type;
+            $options = Options::build($options, func_get_args());
+            $typeGroup = TypeGroup::new(from: $fromObj);
+            $typeGroup->init($setup);
+            $typeGroup->addRule(Rules::array($options->getErrorMessage()), $options);
+            $typeGroup->addRule(
+                rule: $typeGroup->getGroupRule($stopOnFieldFailure, $options->getErrorMessage()),
+                options: $options
+            );
+
+            return $typeGroup;
         };
     }
 
@@ -173,6 +179,17 @@ final class StandardLibrary implements VivyPlugin
             $options = Options::build($options, func_get_args());
             $type = TypeInt::new(from: $obj);
             $type->addRule(Rules::int($options->getErrorMessage()), $options);
+
+            return $type;
+        };
+    }
+
+    public static function in(array $array, bool $strict, Options $options = null)
+    {
+        return function (?TypeInterface $obj) use ($options, $array, $strict) {
+            $options = Options::build($options, func_get_args());
+            $type = TypeScalar::new(from: $obj);
+            $type->addRule(Rules::inArray($array, $strict, $options->getErrorMessage()), $options);
 
             return $type;
         };
@@ -236,7 +253,7 @@ final class StandardLibrary implements VivyPlugin
             $options = Options::build($options, func_get_args());
             $type = TypeString::new(from: $obj);
             $type->addRule(Rules::string($options->getErrorMessage()), $options);
-            $type->allowEmptyString();
+            // $type->allowEmptyString();
 
             return $type;
         };

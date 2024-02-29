@@ -96,7 +96,7 @@ class TypeString extends TypeScalar
     {
         $options = Options::build($options, func_get_args());
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('string.startsWith');
-        $this->addRule(Rules::ruleStartsWith($startsWith, $ignoreCase = true, $errormessage), $options);
+        $this->addRule(Rules::stringStartsWith($startsWith, $ignoreCase = true, $errormessage), $options);
 
         return $this;
     }
@@ -121,27 +121,39 @@ class TypeString extends TypeScalar
 
     public function length(int $length, Options $options = null)
     {
+        if ($length < 0) {
+            throw new \InvalidArgumentException('Length must be greater than or equal to 0');
+        }
+
         $options = Options::build($options, func_get_args());
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('string.length');
-        $this->addRule(Rules::ruleLength($length, $errormessage), $options);
+        $this->addRule(Rules::stringLength($length, $errormessage), $options);
 
         return $this;
     }
 
     public function minLength(int $length, Options $options = null)
     {
+        if ($length < 0) {
+            throw new \InvalidArgumentException('Length must be greater than or equal to 0');
+        }
+
         $options = Options::build($options, func_get_args());
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('string.minLength');
-        $this->addRule(Rules::ruleMinLength($length, $errormessage), $options);
+        $this->addRule(Rules::stringMinLength($length, $errormessage), $options);
 
         return $this;
     }
 
     public function maxLength(int $length, Options $options = null)
     {
+        if ($length < 0) {
+            throw new \InvalidArgumentException('Length must be greater than or equal to 0');
+        }
+
         $options = Options::build($options, func_get_args());
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('string.maxLength');
-        $this->addRule(Rules::ruleMaxLength($length, $errormessage), $options);
+        $this->addRule(Rules::stringMaxLength($length, $errormessage), $options);
 
         return $this;
     }

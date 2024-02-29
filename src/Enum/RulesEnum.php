@@ -16,6 +16,7 @@ enum RulesEnum: string
   case ID_LENGTH = 'length';
   case ID_MINLENGTH = 'minLength';
   case ID_MAXLENGTH = 'maxLength';
+  case ID_REGEX = 'regex';
 
   case ID_BETWEEN = 'between';
   case ID_NOTBETWEEN = 'notBetween';

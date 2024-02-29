@@ -156,3 +156,20 @@ test('group-3', function () {
     $err = $validated->errors();
     expect($err)->toBe($expectedErrors);
 });
+
+
+test('group-4', function () {
+    $v = V::group([
+        'person' => V::group([
+            'name' => V::string(),
+        ])
+    ]);
+
+    $validated = V::group($v)->validate([
+        'person' => [
+            'name' => 'kedniko',
+        ],
+    ]);
+
+    expect($validated->isValid())->toBeTrue();
+});

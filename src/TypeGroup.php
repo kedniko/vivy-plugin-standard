@@ -228,8 +228,8 @@ final class TypeGroup extends TypeCompound
 
         $type = new TypeAny();
         $type->required($options);
-        $type->addRule(Rules::notNull($errormessage ?: RuleMessage::getErrorMessage('default.notNull')), $options);
-        $type->addRule(Rules::notEmptyString($errormessage ?: RuleMessage::getErrorMessage('default.notEmptyString')), $options);
+        // $type->addRule(Rules::notNull($errormessage ?: RuleMessage::getErrorMessage('default.notNull')), $options);
+        // $type->addRule(Rules::notEmptyString($errormessage ?: RuleMessage::getErrorMessage('default.notEmptyString')), $options);
 
         return $type;
     }
