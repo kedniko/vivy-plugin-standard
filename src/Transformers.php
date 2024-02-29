@@ -169,6 +169,51 @@ final class Transformers
         }, $errormessage);
     }
 
+    public static function boolValueToBool($errormessage = null): Transformer
+    {
+        $transformerID = TransformersEnum::ID_BOOL_VALUE_TO_BOOL->value;
+        $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
+
+        return new Transformer($transformerID, function (ContextInterface $c): bool {
+            $value = $c->value;
+
+            if (in_array($value, ['true', 'false'], true)) {
+                return $value === 'true';
+            }
+
+            if (in_array($value, ['1', '0'], true)) {
+                return $value === '1';
+            }
+
+            if (in_array($value, [true, false], true)) {
+                return $value === true;
+            }
+
+            if (in_array($value, [1, 0], true)) {
+                return $value === 1;
+            }
+
+            throw new VivyTransformerException($value . ' is not allowed');
+        }, $errormessage);
+    }
+
+    public static function intValueToInt($errormessage = null): Transformer
+    {
+        $transformerID = TransformersEnum::ID_INT_VALUE_TO_INT->value;
+        $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
+
+        return new Transformer($transformerID, function (ContextInterface $c): int {
+            $value = $c->value;
+
+            if (is_scalar($value)) {
+                $val = intval($value);
+                return $val;
+            }
+
+            throw new VivyTransformerException($value . ' is not allowed');
+        }, $errormessage);
+    }
+
     public static function intToString($errormessage = null): Transformer
     {
         $transformerID = TransformersEnum::ID_INT_TO_STRING->value;

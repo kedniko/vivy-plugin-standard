@@ -6,13 +6,13 @@ use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Support\Util;
 use Kedniko\Vivy\Messages\TransformerMessage;
 
-final class TypeStringBool extends TypeString
+final class TypeIntValue extends TypeNumber
 {
-    public function toBool(Options $options = null)
+    public function toInt(Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
-        $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('stringToBool');
-        $transformer = Transformers::stringBoolToBool($errormessage);
+        $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('boolValueToBool');
+        $transformer = Transformers::intValueToInt($errormessage);
         $this->addTransformer($transformer, $options);
 
         return TypeBool::new($this);

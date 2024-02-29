@@ -2,17 +2,18 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\V;
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\V;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Contracts\ContextInterface;
 
 final class TypeStringEmail extends TypeString
 {
     public function checkValidDomain($record = 'MX', Options $options = null)
     {
         $record = Helpers::notNullOrDefault($record, 'MX');
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Questo dominio non esiste';
 
         $rule = V::rule('domain-exists', function (ContextInterface $c) use ($record): bool {
@@ -29,7 +30,7 @@ final class TypeStringEmail extends TypeString
 
     public function domainIs($domain, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Il dominio non corrisponde';
 
         $rule = V::rule('invalid-domain', function (ContextInterface $c) use ($domain): bool {
@@ -46,7 +47,7 @@ final class TypeStringEmail extends TypeString
 
     public function domainInArray($domainArray, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Il dominio non corrisponde';
 
         $rule = V::rule('invalid-domain', function (ContextInterface $c) use ($domainArray): bool {
@@ -63,7 +64,7 @@ final class TypeStringEmail extends TypeString
 
     public function tldIs($tld, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Il Top-level-domain non valido';
 
         $rule = V::rule('invalid-domain', function (ContextInterface $c) use ($tld): bool {
@@ -80,7 +81,7 @@ final class TypeStringEmail extends TypeString
 
     public function tldInArray($tldArray, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Il Top-level-domain non valido';
 
         $rule = V::rule('invalid-domain', function (ContextInterface $c) use ($tldArray): bool {

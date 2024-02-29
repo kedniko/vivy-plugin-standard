@@ -7,16 +7,18 @@ use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Transformer;
 use Kedniko\Vivy\ArrayContext;
 use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Support\Util;
 use Kedniko\Vivy\Core\Validated;
+use Kedniko\Vivy\Type\TypeCompound;
 use Kedniko\Vivy\Contracts\TypeInterface;
 use Kedniko\Vivy\Contracts\ContextInterface;
-use Kedniko\VivyPluginStandard\Enum\RulesEnum;
+use Kedniko\Vivy\Enum\RulesEnum as CoreRulesEnum;
 
 final class TypeArray extends TypeCompound
 {
     public function count($count, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di elementi non ammesso';
 
         $middleware = new Rule('count', function (ContextInterface $c) use ($count): bool {
@@ -34,7 +36,7 @@ final class TypeArray extends TypeCompound
 
     public function minCount($minCount, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di elementi troppo piccolo';
 
         $middleware = new Rule('minCount', function (ContextInterface $c) use ($minCount): bool {
@@ -52,7 +54,7 @@ final class TypeArray extends TypeCompound
 
     public function maxCount($maxCount, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di elementi troppo grande';
         $middleware = new Rule('maxCount', function (ContextInterface $c) use ($maxCount): bool {
             if (!is_array($c->value)) {
@@ -81,7 +83,7 @@ final class TypeArray extends TypeCompound
 
     public function each(TypeInterface|array $type, bool|callable $stopOnItemFailure = false, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
 
         if (is_array($type)) {
             $type = V::group($type);
@@ -95,7 +97,7 @@ final class TypeArray extends TypeCompound
 
     private function getEachRule(TypeInterface $type, bool|callable $stopOnItemFailure, $errormessage): Rule
     {
-        $ruleID = RulesEnum::ID_EACH->value;
+        $ruleID = CoreRulesEnum::ID_EACH->value;
         $ruleFn = function (ContextInterface $c) use ($type, $stopOnItemFailure): \Kedniko\Vivy\Core\Validated {
             if (!is_array($c->value)) {
                 throw new \Exception('This is not an array. Got [' . gettype($c->value) . ']: ' . json_encode($c->value, JSON_THROW_ON_ERROR), 1);

@@ -7,6 +7,8 @@ namespace Kedniko\VivyPluginStandard\Enum;
 enum TransformersEnum: string
 {
   case ID_STRING_TO_BOOL = 'stringToBool';
+  case ID_BOOL_VALUE_TO_BOOL = 'boolValueToBool';
+  case ID_INT_VALUE_TO_INT = 'intValueToInt';
   case ID_STRING_TO_INT = 'stringToInt';
   case ID_BOOL_TO_INT = 'boolToInt';
   case ID_BOOL_TO_STRING = 'boolToString';
