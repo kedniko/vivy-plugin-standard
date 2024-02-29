@@ -14,6 +14,7 @@ use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 use Kedniko\Vivy\Exceptions\VivyMiddlewareNotFoundException;
+use Kedniko\Vivy\Support\Util;
 
 final class Rules
 {
@@ -600,6 +601,17 @@ final class Rules
 
         return new Rule($ruleID, $ruleFn, $errormessage);
     }
+
+    public static function orderedIndexedArray(string|callable $errormessage = null): Rule
+    {
+        $ruleID = RulesEnum::ID_ORDERED_INDEXED_ARRAY->value;
+        $ruleFn = fn (ContextInterface $c): bool => Util::isOrderedIndexedArray($c->value);
+
+        $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
+
+        return new Rule($ruleID, $ruleFn, $errormessage);
+    }
+
 
     public static function regex($regex, string $ruleID, string|callable $errormessage = null): Rule
     {

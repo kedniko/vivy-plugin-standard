@@ -49,6 +49,7 @@ enum RulesEnum: string
   case ID_MIN = 'min';
   case ID_MAX = 'max';
   case ID_ARRAY = 'array';
+  case ID_ORDERED_INDEXED_ARRAY = 'orderedIndexedArray';
   case ID_SCALAR = 'scalar';
   case ID_IN_ARRAY = 'inArray';
   case ID_NOT_IN_ARRAY = 'notInArray';

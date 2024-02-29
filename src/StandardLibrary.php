@@ -440,7 +440,7 @@ final class StandardLibrary implements VivyPlugin
         return function (?TypeInterface $obj) use ($options) {
             $options = Options::build($options, func_get_args());
             $type = TypeArray::new(from: $obj);
-            $type->addRule(Rules::array($options->getErrorMessage()), $options);
+            $type->addRule(Rules::orderedIndexedArray($options->getErrorMessage()), $options);
 
             return $type;
         };

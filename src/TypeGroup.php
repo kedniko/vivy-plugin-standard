@@ -62,7 +62,12 @@ final class TypeGroup extends TypeCompound
                     $nextIsUndefined = false;
                 }
 
-                $gc = GroupContext::build($fieldname, $c, $c->value[$fieldname] ?? Undefined::instance(), $c);
+                $gc = GroupContext::build(
+                    $fieldname,
+                    $c,
+                    $c->value[$fieldname] ?? Undefined::instance(),
+                    $c
+                );
 
                 $isRequired = $typeProxy->isRequired($gc) && !$nextIsUndefined;
 
@@ -73,6 +78,9 @@ final class TypeGroup extends TypeCompound
                 }
 
                 if (!array_key_exists($fieldname, $c->value) && !$isInOr && $isRequired) {
+
+                    // CASE: required rule failed
+
                     $rule = $type->state->getRequiredRule() ?: Rules::required();
 
                     $newDefault = Helpers::tryToGetDefault($rule->getID(), $typeProxy, $gc);
