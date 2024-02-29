@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Kedniko\Vivy\ArrayContext;
+use Kedniko\Vivy\Core\GroupContext;
 use Kedniko\Vivy\V;
 
 $faker = \Faker\Factory::create();
@@ -65,11 +66,9 @@ test('array-group', function () use ($faker) {
     // $this->assertTrue($ok === 'edited', 'onValid non funziona');
 });
 
-test('array-key-value', function () {
+test('group-key-value', function () {
     $days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-    $validated = V::group([
-        'workdays' => V::array()->each(V::bool()->addRule(V::rule('keys', fn (ArrayContext $c) => in_array($c->index, $days)))),
-    ])->validate([
+    $data = [
         'workdays' => [
             'SUN' => true,
             'MON' => true,
@@ -79,7 +78,26 @@ test('array-key-value', function () {
             'FRI' => true,
             'SAT' => true,
         ],
-    ]);
+    ];
+
+    $validated = V::group([
+        'workdays' => V::group()->addRule(V::rule(
+            'key-values',
+            function (GroupContext $c) use ($days) {
+                $data = $c->value;
+                foreach ($data as $key => $value) {
+                    if (!in_array($key, $days)) {
+                        $c->errors[$key]['key'][] = 'key not valid';
+                    }
+
+                    if (!is_bool($value)) {
+                        $c->errors[$key]['value'][] = 'value not valid';
+                    }
+                }
+                return true;
+            }
+        )),
+    ])->validate($data);
 
     expect($validated->isValid())->toBeTrue();
 });
