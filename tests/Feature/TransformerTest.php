@@ -10,9 +10,7 @@ uses()->group('transformer');
 test('transformer-1', function () {
     $v = V::group([
         'name' => V::string()->addTransformer(function (GroupContext $gc) {
-            $value = $gc->value;
-
-            return strtoupper($value);
+            return strtoupper($gc->value);
         }),
         'password' => V::string(),
     ]);

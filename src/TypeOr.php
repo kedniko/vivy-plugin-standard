@@ -60,6 +60,7 @@ final class TypeOr extends Type
             while ($types->hasNext()) {
                 $index++;
                 $type = $types->getNext();
+                assert($type instanceof TypeInterface);
                 $type->_extra = ['isInsideOr' => true];
 
                 $clonedValue = Util::clone($c->value);

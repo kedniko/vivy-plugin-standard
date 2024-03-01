@@ -93,6 +93,9 @@ final class TypeGroup extends TypeCompound
                     }
                 } else {
                     $typeValue = array_key_exists($fieldname, $c->value) ? $c->value[$fieldname] : Undefined::instance();
+                    // if ($fieldname === 'gearbox' && $typeValue === 'Manuale') {
+                    //     xdebug_break();
+                    // }
                     $validated = $type->validate($typeValue, $c);
 
                     // TODO check if this is correct
@@ -154,8 +157,10 @@ final class TypeGroup extends TypeCompound
         return $this->state->getFields();
     }
 
-    private function buildFieldFromString(string $setup)
+    private function buildFieldFromString($value)
     {
+        return V::is($value, true);
+
         $type = $this->getNewUnkownField();
         // foreach (explode('|', $setup) as $rule) {
         //     $this->applyRuleOnField($rule, $type);
