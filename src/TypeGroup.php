@@ -38,7 +38,7 @@ final class TypeGroup extends TypeCompound
     public function getGroupRule(bool $stopOnFieldFailure, mixed $errormessage): Rule
     {
         $ruleID = RulesEnum::ID_GROUP->value;
-        $ruleFn = function (ContextInterface $c) use ($stopOnFieldFailure): \Kedniko\Vivy\Core\Validated {
+        $ruleFn = function (ContextInterface $c) use ($stopOnFieldFailure): Validated {
             $typeFields = $this->getFieldsFromState($c);
 
             $continueLoopFields = true;
@@ -54,9 +54,9 @@ final class TypeGroup extends TypeCompound
                 $hasNextMiddleare = $middlewares->hasNext();
                 if ($hasNextMiddleare) {
                     $nextMiddleware = $middlewares->getNext();
-                    $nextIsUndefined = $nextMiddleware instanceof Rule && $nextMiddleware->getID() === RulesEnum::ID_UNDEFINED->value;
+                    $nextRuleIsUndefined = $nextMiddleware instanceof Rule && $nextMiddleware->getID() === RulesEnum::ID_UNDEFINED->value;
                 } else {
-                    $nextIsUndefined = false;
+                    $nextRuleIsUndefined = false;
                 }
 
                 $gc = GroupContext::build(
@@ -66,7 +66,7 @@ final class TypeGroup extends TypeCompound
                     $c
                 );
 
-                $isRequired = $typeProxy->isRequired($gc) && !$nextIsUndefined;
+                $isRequired = $typeProxy->isRequired($gc);
 
                 $isInOr = $type instanceof TypeOr;
 
@@ -74,7 +74,12 @@ final class TypeGroup extends TypeCompound
                     throw new \Exception('$c->value in not an array', 1);
                 }
 
-                if (!array_key_exists($fieldname, $c->value) && !$isInOr && $isRequired) {
+                $caseRuleRequiredFailed = !array_key_exists($fieldname, $c->value) &&
+                    $isRequired &&
+                    !$isInOr &&
+                    !$nextRuleIsUndefined;
+
+                if ($caseRuleRequiredFailed) {
 
                     // CASE: required rule failed
 
@@ -89,10 +94,10 @@ final class TypeGroup extends TypeCompound
                         $c->value[$fieldname] = Undefined::instance();
                     }
                 } else {
-                    $typeValue = array_key_exists($fieldname, $c->value) ? $c->value[$fieldname] : Undefined::instance();
-                    // if ($fieldname === 'gearbox' && $typeValue === 'Manuale') {
-                    //     xdebug_break();
-                    // }
+                    $typeValue = array_key_exists($fieldname, $c->value)
+                        ? $c->value[$fieldname]
+                        : Undefined::instance();
+
                     $validated = $type->validate($typeValue, $c);
 
                     // TODO check if this is correct

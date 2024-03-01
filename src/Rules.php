@@ -4,6 +4,7 @@ namespace Kedniko\VivyPluginStandard;
 
 use DateTime;
 use Brick\Math\BigDecimal;
+use Kedniko\Vivy\Context;
 use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Support\Str;
 use Kedniko\Vivy\Core\Helpers;
@@ -362,7 +363,9 @@ final class Rules
     public static function undefined(string|callable $errormessage = null): Rule
     {
         $ruleID = RulesEnum::ID_UNDEFINED->value;
-        $ruleFn = fn (): \Kedniko\Vivy\Core\Undefined => Undefined::instance();
+        $ruleFn = function (ContextInterface $c): bool {
+            return $c->value instanceof Undefined;
+        };
 
         $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
 

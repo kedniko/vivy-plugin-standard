@@ -111,3 +111,39 @@ test('allow-null', function () {
 
     expect($validated->value())->toBe(['date' => 'yes!']);
 });
+
+test('or-with-undefined-rule', function () {
+    $validated = V::group([
+        'name' => V::or([
+            V::undefined()->setValue('undefined'),
+            V::null()->setValue('null'),
+            V::string()->setValue('string'),
+        ]),
+    ])->validate([
+        'name' => 'niko',
+    ]);
+
+    expect($validated->value())->toBe(['name' => 'string']);
+});
+
+test('or-with-undefined-rule-2', function () {
+    $v = V::group([
+        'name' => V::undefined()->setValue('undefined'),
+        'lastname' => V::or([
+            V::undefined()->setValue('undefined'),
+            V::null()->setValue('null'),
+            V::string()->setValue('string'),
+        ]),
+    ]);
+
+    $validated = $v->validate([
+        'placeholder' => 'john',
+        'lastname' => 'ked',
+    ]);
+
+    expect($validated->value())->toBe([
+        'placeholder' => 'john',
+        'lastname' => 'string',
+        'name' => 'undefined',
+    ]);
+});
