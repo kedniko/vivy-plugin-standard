@@ -7,18 +7,18 @@ use Kedniko\Vivy\Contracts\TypeInterface;
 use Kedniko\Vivy\Core\GroupContext;
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\LinkedList;
-use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Core\Undefined;
 use Kedniko\Vivy\Core\Validated;
 use Kedniko\Vivy\Exceptions\VivyException;
-use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 use Kedniko\Vivy\Support\TypeProxy;
 use Kedniko\Vivy\V;
 
 final class TypeGroup extends TypeCompound
 {
+
+
     public function init(array|callable $setup = null)
     {
         if (!$setup) {
@@ -26,7 +26,7 @@ final class TypeGroup extends TypeCompound
         }
 
         if (is_array($setup)) {
-            $types = $this->getFieldsFromAssociativeArraySetup($setup);
+            $types = $this->getTypeFromArray($setup);
             $this->state->setFields($types);
         } elseif (is_callable($setup)) {
             $this->state->setupFn = $setup;
@@ -35,9 +35,6 @@ final class TypeGroup extends TypeCompound
         return $this;
     }
 
-    /**
-     * @param  LinkedList|callable  $types
-     */
     public function getGroupRule(bool $stopOnFieldFailure, mixed $errormessage): Rule
     {
         $ruleID = RulesEnum::ID_GROUP->value;
@@ -151,106 +148,14 @@ final class TypeGroup extends TypeCompound
             $fn = $this->state->setupFn;
             $arraySetup = $fn($c);
 
-            return $this->getFieldsFromAssociativeArraySetup($arraySetup);
+            assert(is_array($arraySetup));
+
+            return $this->getTypeFromArray($arraySetup);
         }
 
         return $this->state->getFields();
     }
 
-    private function buildFieldFromString($value)
-    {
-        return V::is($value, true);
-
-        $type = $this->getNewUnkownField();
-        // foreach (explode('|', $setup) as $rule) {
-        //     $this->applyRuleOnField($rule, $type);
-        // }
-
-        return $type;
-    }
-
-    private function buildFieldFromCallable(callable $setup)
-    {
-        $type = $this->getNewUnkownEmptyField();
-        $type->state->setupFn = $setup;
-
-        return $type;
-    }
-
-    private function buildFieldFromArray(array $setup)
-    {
-        return V::group($setup);
-    }
-
-    private function getFieldsFromAssociativeArraySetup(array $setupArray): LinkedList
-    {
-        $types = new LinkedList();
-
-        foreach ($setupArray as $fieldname => $type) {
-            if (is_string($type)) {
-                $type = $this->buildFieldFromString($type);
-            } elseif (is_callable($type)) {
-                $type = $this->buildFieldFromCallable($type);
-            } elseif (is_array($type)) {
-                $type = $this->buildFieldFromArray($type);
-            } elseif ($type instanceof TypeInterface) {
-                // do nothing
-            } else {
-                throw new VivyException('Unknown setup type: ' . gettype($type));
-            }
-
-            if (!$type->state->issetRequired()) {
-                $type->state->setRequired(true, Rules::required());
-            }
-            (new TypeProxy($type))->setName($fieldname);
-            $types->append($type);
-        }
-
-        return $types;
-    }
-
-    private function applyRuleOnField(string $rule, TypeAny $type): void
-    {
-        if ($rule === 'optional') {
-            // $type->optional();
-        }
-        if ($rule === 'string') {
-            $type->string();
-        }
-        if ($rule === 'email') {
-            $type->email();
-        }
-
-        if (count($parts = explode(':', $rule)) === 2) {
-            if ($parts[0] === 'minlen') {
-                $type->string()->minLength($parts[1]);
-            }
-            if ($parts[0] === 'maxlen') {
-                $type->string()->maxLength($parts[1]);
-            }
-        }
-    }
-
-    /**
-     * @param  mixed  $name
-     */
-    private function getNewUnkownField(Options $options = null): TypeAny
-    {
-        $options = Helpers::getOptions($options);
-        $errormessage = $options->getErrorMessage();
-
-        $type = new TypeAny();
-        $type->required($options);
-        // $type->addRule(Rules::notNull($errormessage ?: RuleMessage::getErrorMessage('default.notNull')), $options);
-        // $type->addRule(Rules::notEmptyString($errormessage ?: RuleMessage::getErrorMessage('default.notEmptyString')), $options);
-
-        return $type;
-    }
-
-    private function getNewUnkownEmptyField(): TypeAny
-    {
-        return new TypeAny();
-    }
 
     // public function addField($name, BasicField $type, Options $options = null)
     // {
@@ -261,11 +166,7 @@ final class TypeGroup extends TypeCompound
     // 	$this->fields->append(new Node($type));
     // }
 
-    /**
-     * @param  string  $fieldname
-     * @param  TypeInterface  $type
-     */
-    public function addField($fieldname, $type)
+    public function addField(string $fieldname, TypeInterface $type)
     {
         /** @var LinkedList[TypeInterface] $types */
         $types = $this->state->getFields();
@@ -282,5 +183,34 @@ final class TypeGroup extends TypeCompound
         }
 
         return $this;
+    }
+
+    private function getTypeFromArray(array $setupArray): LinkedList
+    {
+        $types = new LinkedList();
+
+        foreach ($setupArray as $fieldname => $type) {
+            if (is_string($type)) {
+                $type = V::is($type, true);
+            } elseif (is_callable($type)) {
+                $setupFn = $type;
+                $type = TypeAny::new();
+                $type->state->setupFn = $setupFn;
+            } elseif (is_array($type)) {
+                $type = V::group($type);
+            } elseif ($type instanceof TypeInterface) {
+                // do nothing
+            } else {
+                throw new VivyException('Unknown setup type: ' . gettype($type));
+            }
+
+            if (!$type->state->issetRequired()) {
+                $type->state->setRequired(true, Rules::required());
+            }
+            (new TypeProxy($type))->setName($fieldname);
+            $types->append($type);
+        }
+
+        return $types;
     }
 }

@@ -41,7 +41,7 @@ class TypeScalar extends Type
     public function regex($regex, $ruleID, Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
-        $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('regex');
+        $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage($ruleID);
 
         $this->addRule(Rules::regex($regex, $ruleID, $errormessage), $options);
 

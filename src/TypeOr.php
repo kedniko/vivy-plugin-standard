@@ -2,17 +2,18 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Contracts\ContextInterface;
-use Kedniko\Vivy\Contracts\TypeInterface;
-use Kedniko\Vivy\Core\Helpers;
-use Kedniko\Vivy\Core\LinkedList;
-use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Core\OrContext;
+use Kedniko\Vivy\V;
 use Kedniko\Vivy\Core\Rule;
-use Kedniko\Vivy\Core\Validated;
-use Kedniko\VivyPluginStandard\Enum\RulesEnum;
-use Kedniko\Vivy\Support\TypeProxy;
+use Kedniko\Vivy\Core\Helpers;
+use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Core\OrContext;
+use Kedniko\Vivy\Core\Validated;
+use Kedniko\Vivy\Core\LinkedList;
+use Kedniko\Vivy\Support\TypeProxy;
+use Kedniko\Vivy\Contracts\TypeInterface;
+use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 
 final class TypeOr extends Type
 {
@@ -21,11 +22,22 @@ final class TypeOr extends Type
      */
     public function init(array $types, bool $isNot = false, Options $options = null)
     {
+        foreach ($types as $key => $type) {
+
+            if (!($type instanceof TypeInterface)) {
+                if (is_array($type)) {
+                    $types[$key] = V::group($type);
+                }
+            }
+        }
+
         $this->addRule($this->getOrRule($types, $isNot, $options->getErrorMessage()), $options);
         // $this->universes = $types;
 
         // $this->_extra['hasUndefined'] = false;
         foreach ($types as $type) {
+
+            assert($type instanceof TypeInterface);
             $canBeNull = (new TypeProxy($type))->canBeNull();
             $canBeEmptyString = (new TypeProxy($type))->canBeEmptyString();
             if ($canBeNull) {
