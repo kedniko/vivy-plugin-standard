@@ -4,6 +4,7 @@ namespace Tests;
 
 use Kedniko\Vivy\O;
 use Kedniko\Vivy\V;
+use Kedniko\Vivy\Serializer;
 
 uses()->group('group');
 
@@ -169,6 +170,26 @@ test('group-4', function () {
         'person' => [
             'name' => 'kedniko',
         ],
+    ]);
+
+    expect($validated->isValid())->toBeTrue();
+});
+
+
+test('group-with-is', function () {
+
+    $v = V::group([
+        "usage" => V::is('usato'),
+        "origin" => V::is('nazionale'),
+        "registration_date" => V::date('m/Y'),
+        "km" => V::is('11000'),
+    ]);
+
+    $validated = $v->validate([
+        "usage" => "usato",
+        "origin" => "nazionale",
+        "registration_date" => "07/2018",
+        "km" => "11000",
     ]);
 
     expect($validated->isValid())->toBeTrue();

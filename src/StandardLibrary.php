@@ -2,6 +2,7 @@
 
 namespace Kedniko\VivyPluginStandard;
 
+use Kedniko\Vivy\Callback;
 use Kedniko\Vivy\Contracts\TypeInterface;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Interfaces\VivyPlugin;
@@ -9,6 +10,7 @@ use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 use Kedniko\Vivy\Support\Registrar;
 use Kedniko\Vivy\Support\TypeProxy;
+use Kedniko\Vivy\Support\Util;
 use Kedniko\Vivy\Type;
 use Kedniko\Vivy\V;
 
@@ -58,6 +60,8 @@ final class StandardLibrary implements VivyPlugin
             Registrar::make('numberString')->for([V::class, TypeAny::class])->callback([self::class, 'numberString'])->return(TypeStringNumber::class),
             Registrar::make('email')->for([V::class, TypeAny::class])->callback([self::class, 'email'])->return(TypeStringEmail::class),
             Registrar::make('in')->for([V::class, TypeAny::class])->callback([self::class, 'in'])->return(TypeScalar::class),
+            Registrar::make('is')->for([V::class, TypeAny::class])->callback([self::class, 'is'])->return(TypeAny::class),
+            Registrar::make('notIs')->for([V::class, TypeAny::class])->callback([self::class, 'notIs'])->return(TypeAny::class),
             Registrar::make('emptyString')->for([V::class, TypeAny::class])->callback([self::class, 'emptyString'])->return(TypeStringEmpty::class),
             Registrar::make('notEmptyString')->for([V::class, TypeAny::class])->callback([self::class, 'notEmptyString'])->return(TypeString::class),
             // [V::class, 'inArray', [Rules::class, 'inArray'], Type::class],
@@ -89,17 +93,19 @@ final class StandardLibrary implements VivyPlugin
         ]);
     }
 
-    public static function any()
+    public static function any(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return Type::new(from: $obj);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = Type::new(from: $obj);
+            $type->addCallback(new Callback('asDate', fn () => null), $options);
+            return $type;
         };
     }
 
     public static function email(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeStringEmail::new(from: $obj);
             $type->addRule(Rules::email($options->getErrorMessage()), $options);
 
@@ -109,12 +115,13 @@ final class StandardLibrary implements VivyPlugin
 
     public static function group(array|callable|TypeGroup $setup = null, bool $stopOnFieldFailure = false, Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+
         return function (?TypeInterface $fromObj) use ($setup, $stopOnFieldFailure, $options) {
             if ($setup instanceof TypeGroup) {
                 return $setup;
             }
 
-            $options = Options::build($options, func_get_args());
             $typeGroup = TypeGroup::new(from: $fromObj);
             $typeGroup->init($setup);
             $typeGroup->addRule(Rules::array($options->getErrorMessage()), $options);
@@ -132,9 +139,8 @@ final class StandardLibrary implements VivyPlugin
      */
     public static function or(array $types, Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($types, $options) {
-            $options = Options::build($options, func_get_args());
-
             return TypeOr::new(from: $obj)->init($types, false, $options);
         };
     }
@@ -144,28 +150,27 @@ final class StandardLibrary implements VivyPlugin
     //  * @param Options|null $options
     //  */
     // public static function and(array $types, Options $options = null)
+    // 	$options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
     // {
-    // 	$options = Options::build($options, func_get_args());
     // 	$type = new TypeOr($types, false, $options);
     // 	return $type;
     // }
 
-    /**
-     * @param  TypeInterface[]  $types
-     */
-    public static function notIn($types, Options $options = null)
+    public static function notIn(array $array, bool $strict = true, Options $options = null)
     {
-        return function (?TypeInterface $obj) use ($options, $types) {
-            $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options, $array, $strict) {
+            $type = TypeScalar::new(from: $obj);
+            $type->addRule(Rules::notInArray($array, $strict, $options->getErrorMessage()), $options);
 
-            return (new TypeOr($types, true, $options))->from($obj);
+            return $type;
         };
     }
 
     public static function file(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeFile::new(from: $obj);
             $type->addRule(Rules::file($options->getErrorMessage()), $options);
 
@@ -175,8 +180,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function int(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeInt::new(from: $obj);
             $type->addRule(Rules::int($options->getErrorMessage()), $options);
 
@@ -184,10 +189,32 @@ final class StandardLibrary implements VivyPlugin
         };
     }
 
-    public static function in(array $array, bool $strict, Options $options = null)
+    public static function is($value, bool $strict = true, Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options, $value, $strict) {
+            $type = TypeAny::new(from: $obj);
+            $type->addRule(Rules::equals($value, $strict, $options->getErrorMessage()), $options);
+
+            return $type;
+        };
+    }
+
+    public static function notIs($value, bool $strict = true, Options $options = null)
+    {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options, $value, $strict) {
+            $type = TypeAny::new(from: $obj);
+            $type->addRule(Rules::notEquals($value, $strict, $options->getErrorMessage()), $options);
+
+            return $type;
+        };
+    }
+
+    public static function in(array $array, bool $strict = true, Options $options = null)
+    {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options, $array, $strict) {
-            $options = Options::build($options, func_get_args());
             $type = TypeScalar::new(from: $obj);
             $type->addRule(Rules::inArray($array, $strict, $options->getErrorMessage()), $options);
 
@@ -196,8 +223,8 @@ final class StandardLibrary implements VivyPlugin
     }
 
     // public static function intWithClass(Options $options = null)
+    // 	$options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
     // {
-    // 	$options = Options::build($options, func_get_args());
     // 	$type = new TypeInt();
     // 	$type->addRule(Rules::intWithClass($options->getErrorMessage()), $options);
     // 	return $type;
@@ -205,8 +232,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function bool(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeBool::new(from: $obj);
             $type->addRule(Rules::bool($options->getErrorMessage()), $options);
 
@@ -216,8 +243,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function float($strictFloat = false, Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($strictFloat, $options): \Kedniko\VivyPluginStandard\TypeFloat {
-            $options = Options::build($options, func_get_args());
             $type = new TypeFloat();
             $type->addRule(Rules::float($strictFloat, $options->getErrorMessage()), $options);
 
@@ -227,8 +254,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function number(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeNumber::new(from: $obj);
             $type->addRule(Rules::floatOrInt($options->getErrorMessage()), $options);
 
@@ -238,8 +265,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function numberString(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeStringNumber::new(from: $obj);
             $type->addRule(Rules::numberString(false, $options->getErrorMessage()), $options);
 
@@ -249,8 +276,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function string(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeString::new(from: $obj);
             $type->addRule(Rules::string($options->getErrorMessage()), $options);
             // $type->allowEmptyString();
@@ -261,8 +288,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function digits(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeStringInt::new(from: $obj);
             $type->addRule(Rules::digitsString(false, $options->getErrorMessage()), $options);
 
@@ -272,8 +299,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function intString(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeStringInt::new(from: $obj);
             $type->addRule(Rules::intString(false, $options->getErrorMessage()), $options);
 
@@ -283,8 +310,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function boolString(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeStringBool::new(from: $obj);
             $type->addRule(Rules::boolString($options->getErrorMessage()), $options);
 
@@ -294,8 +321,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function floatString($strict = true, $trim = false, Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($strict, $trim, $options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeStringInt::new(from: $obj);
             $type->addRule(Rules::floatString($strict, $trim, $options->getErrorMessage()), $options);
 
@@ -305,8 +332,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function date($format = 'Y-m-d', Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($format, $options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeStringDate::new(from: $obj);
             (new TypeProxy($type))->setChildStateProperty('_extra.format', $format);
             $type->addRule(Rules::date($format, $options->getErrorMessage()), $options);
@@ -317,8 +344,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function everything(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
 
             return Type::new(from: $obj);
         };
@@ -326,8 +353,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function notFalsy(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = Type::new(from: $obj);
             $type->addRule(Rules::notFalsy($options->getErrorMessage() ?: RuleMessage::getErrorMessage('default.notFalsy')), $options);
 
@@ -350,8 +377,8 @@ final class StandardLibrary implements VivyPlugin
     // }
     public static function notNull(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
 
             return Type::new(from: $obj);
         };
@@ -359,8 +386,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function null(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeNull::new(from: $obj);
             $type->allowNull();
             $type->addRule(Rules::null($options->getErrorMessage() ?: RuleMessage::getErrorMessage('default.' . RulesEnum::ID_NULL->value)), $options);
@@ -371,8 +398,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function notEmptyString(bool $trim = false, Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options, $trim) {
-            $options = Options::build($options, func_get_args());
             $type = TypeString::new(from: $obj);
             $err = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('default.' . RulesEnum::ID_NOT_EMPTY_STRING->value);
             $type->addRule(Rules::notEmptyString($trim, $err, $options));
@@ -383,8 +410,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function emptyString(bool $trim = false, Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options, $trim) {
-            $options = Options::build($options, func_get_args());
             $type = TypeStringEmpty::new(from: $obj);
             $err = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('default.' . RulesEnum::ID_EMPTY_STRING->value);
             $type->addRule(Rules::emptyString($trim, $err, $options));
@@ -410,8 +437,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function undefined(bool $enableDafault = false, mixed $value = null, Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($enableDafault, $value, $options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeUndefined::new(from: $obj);
             if (static::class === V::class) {
                 $type->state->_extra = ['startsWithUndefined' => true];
@@ -428,8 +455,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function files(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
 
             return TypeFiles::new(from: $obj);
         };
@@ -437,8 +464,8 @@ final class StandardLibrary implements VivyPlugin
 
     public static function array(Options $options = null)
     {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options) {
-            $options = Options::build($options, func_get_args());
             $type = TypeArray::new(from: $obj);
             $type->addRule(Rules::orderedIndexedArray($options->getErrorMessage()), $options);
 
@@ -456,97 +483,147 @@ final class StandardLibrary implements VivyPlugin
 
     // casts
 
-    public static function asFile()
+    public static function asFile(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeFile::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeFile::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asFile', fn () => null), $options);
+            return $type;
         };
     }
 
-    public static function asArray()
+    public static function asArray(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeArray::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeArray::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asArray', fn () => null), $options);
+            return $type;
         };
     }
 
-    public static function asBool()
+    public static function asBool(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeBool::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeBool::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asBool', fn () => null), $options);
+            return $type;
         };
     }
 
-    public static function asAny()
+    public static function asAny(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeAny::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeAny::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asAny', fn () => null), $options);
+            return $type;
         };
     }
 
     public static function asDate($format = 'Y-m-d', Options $options = null)
     {
-        return function (?TypeInterface $obj) use ($format) {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($format, $options) {
             $type = TypeStringDate::new(from: $obj);
+            $type->addCallback(new Callback('asDate', fn () => null), $options);
             (new TypeProxy($type))->setChildStateProperty('_extra.format', $format);
 
             return $type;
         };
     }
 
-    public static function asEmail()
+    public static function asEmail(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeStringEmail::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeStringEmail::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asEmail', fn () => null), $options);
+            return $type;
         };
     }
 
-    public static function asScalar()
+    public static function asScalar(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeScalar::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeScalar::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asScalar', fn () => null), $options);
+            return $type;
         };
     }
 
-    public static function asFloat()
+    public static function asFloat(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeFloat::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeFloat::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asFloat', fn () => null), $options);
+            return $type;
         };
     }
 
-    public static function asGroup()
+    public static function asGroup(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeGroup::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeGroup::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asGroup', fn () => null), $options);
+            return $type;
         };
     }
 
-    public static function asInt()
+    public static function asInt(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeInt::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeInt::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asInt', fn () => null), $options);
+            return $type;
         };
     }
 
-    public static function asIntString()
+    public static function asIntString(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeStringInt::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeStringInt::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asIntString', fn () => null), $options);
+            return $type;
         };
     }
 
-    public static function asNumber()
+    public static function asNumber(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeNumber::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeNumber::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asNumber', fn () => null), $options);
+            return $type;
         };
     }
 
-    public static function asString()
+    public static function asString(Options $options = null)
     {
-        return function (?TypeInterface $obj) {
-            return TypeString::new(from: $obj);
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        return function (?TypeInterface $obj) use ($options) {
+            $type = TypeString::new(from: $obj);
+            // as
+            $type->addCallback(new Callback('asString', fn () => null), $options);
+            return $type;
         };
     }
 }

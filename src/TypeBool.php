@@ -2,11 +2,12 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Support\Util;
 use Kedniko\Vivy\Messages\RuleMessage;
+use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\Messages\TransformerMessage;
 use Kedniko\VivyPluginStandard\Enum\TransformersEnum;
 
@@ -18,7 +19,7 @@ final class TypeBool extends TypeScalar
     private const RULE_ID = 'boolIs';
     public function equals($bool, $strict = true, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('bool.is');
         $this->addRule(self::ruleBooleanIs($bool, $errormessage), $options);
 
@@ -27,7 +28,7 @@ final class TypeBool extends TypeScalar
 
     public function isTrue(Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('bool.isTrue');
         $rule = new Rule('bool-is-true', fn (ContextInterface $c): bool => $c->value === true, $errormessage);
 
@@ -38,7 +39,7 @@ final class TypeBool extends TypeScalar
 
     public function isFalse(Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('bool.isFalse');
         $rule = new Rule('bool-is-false', fn (ContextInterface $c): bool => $c->value === false, $errormessage);
 

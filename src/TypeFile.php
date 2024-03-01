@@ -2,9 +2,10 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Contracts\ContextInterface;
-use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Contracts\ContextInterface;
 
 final class TypeFile extends TypeCompound
 {
@@ -17,7 +18,7 @@ final class TypeFile extends TypeCompound
 
     public function mime($mime, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Mime non corretto';
 
         $middleware = new Rule('mime', function (ContextInterface $c) use ($mime): bool {
@@ -33,7 +34,7 @@ final class TypeFile extends TypeCompound
 
     public function pdf(Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Non è un pdf';
 
         $middleware = new Rule('pdf', function (ContextInterface $c): bool {
@@ -52,7 +53,7 @@ final class TypeFile extends TypeCompound
      */
     public function extensionIn($extensions, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Estensione non corretta';
 
         $middleware = new Rule('extension', fn (ContextInterface $c): bool => in_array(pathinfo((string) $c->value['tmp_name'], PATHINFO_EXTENSION), $extensions), $errormessage);
@@ -64,7 +65,7 @@ final class TypeFile extends TypeCompound
 
     public function extension($extension, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Estensione non corretta';
 
         $middleware = new Rule('extension', fn (ContextInterface $c): bool => $extension === pathinfo((string) $c->value['tmp_name'], PATHINFO_EXTENSION), $errormessage);
@@ -76,7 +77,7 @@ final class TypeFile extends TypeCompound
 
     public function baseNameEquals($basename, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Lunghezza basename non valida';
 
         $middleware = new Rule('baseNameEquals', fn (ContextInterface $c): bool => $basename === pathinfo((string) $c->value['basename'], PATHINFO_BASENAME), $errormessage);
@@ -88,7 +89,7 @@ final class TypeFile extends TypeCompound
 
     public function baseNameLength($maxLength, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Lunghezza basename non valida';
 
         $middleware = new Rule('baseNameLength', fn (ContextInterface $c): bool => $maxLength === strlen(pathinfo((string) $c->value['basename'], PATHINFO_BASENAME)), $errormessage);
@@ -100,7 +101,7 @@ final class TypeFile extends TypeCompound
 
     public function baseNameMinLength($maxLength, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Basename troppo corto';
 
         $middleware = new Rule('baseNameMinLength', fn (ContextInterface $c): bool => $maxLength >= strlen(pathinfo((string) $c->value['basename'], PATHINFO_BASENAME)), $errormessage);
@@ -112,7 +113,7 @@ final class TypeFile extends TypeCompound
 
     public function baseNameMaxLength($maxLength, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Basename troppo lungo';
 
         $middleware = new Rule('baseNameMaxLength', fn (ContextInterface $c): bool => $maxLength <= strlen(pathinfo((string) $c->value['basename'], PATHINFO_BASENAME)), $errormessage);
@@ -124,7 +125,7 @@ final class TypeFile extends TypeCompound
 
     public function fileNameLength($maxLength, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Lunghezza filename non valida';
 
         $middleware = new Rule('FileNameLength', fn (ContextInterface $c): bool => $maxLength === strlen(pathinfo((string) $c->value['FILENAME'], PATHINFO_FILENAME)), $errormessage);
@@ -136,7 +137,7 @@ final class TypeFile extends TypeCompound
 
     public function fileNameMinLength($maxLength, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Filename troppo corto';
 
         $middleware = new Rule('fileNameMinLength', fn (ContextInterface $c): bool => $maxLength >= strlen(pathinfo((string) $c->value['FILENAME'], PATHINFO_FILENAME)), $errormessage);
@@ -148,7 +149,7 @@ final class TypeFile extends TypeCompound
 
     public function fileNameMaxLength($maxLength, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Filename troppo lungo';
 
         $middleware = new Rule('fileNameMaxLength', fn (ContextInterface $c): bool => $maxLength <= strlen(pathinfo((string) $c->value['FILENAME'], PATHINFO_FILENAME)), $errormessage);
@@ -160,7 +161,7 @@ final class TypeFile extends TypeCompound
 
     public function size(mixed $size, mixed $unit = 'B', Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensione file non accettata';
 
         $size = $this->convertUnit($size, $unit, 'B');
@@ -181,7 +182,7 @@ final class TypeFile extends TypeCompound
      */
     public function maxSize(mixed $maxSize, mixed $unit = 'B', Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensione file troppo grande';
 
         $maxSize = $this->convertUnit($maxSize, $unit, 'B');
@@ -199,7 +200,7 @@ final class TypeFile extends TypeCompound
 
     public function minSize(mixed $minSize, mixed $unit = 'B', Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensione file troppo piccola';
 
         $minSize = $this->convertUnit($minSize, $unit, 'B');

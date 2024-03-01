@@ -2,12 +2,13 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Brick\Math\BigDecimal;
-use Kedniko\Vivy\Contracts\ContextInterface;
-use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Core\Rule;
-use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\Vivy\V;
+use Brick\Math\BigDecimal;
+use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Messages\RuleMessage;
+use Kedniko\Vivy\Contracts\ContextInterface;
 
 class TypeNumber extends TypeScalar
 {
@@ -32,7 +33,7 @@ class TypeNumber extends TypeScalar
     public function min(\Brick\Math\BigNumber|int|float|string $min, Options $options = null)
     {
         $ruleid = self::ID_MIN;
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage("number.{$ruleid}");
         $this->addRule(Rules::min($min, $errormessage), $options);
 
@@ -42,7 +43,7 @@ class TypeNumber extends TypeScalar
     public function max(\Brick\Math\BigNumber|int|float|string $max, Options $options = null)
     {
         $ruleid = self::ID_MAX;
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage("number.{$ruleid}");
         $this->addRule(Rules::max($max, $errormessage), $options);
 
@@ -52,7 +53,7 @@ class TypeNumber extends TypeScalar
     public function decimalPartIs(\Brick\Math\BigNumber|int|float|string $number, Options $options = null)
     {
         $ruleID = self::ID_NUMBER_DECIMAL_PART_IS;
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage("number.{$ruleID}");
 
         $rule = V::rule($ruleID, function (ContextInterface $c) use ($number): bool {
@@ -74,7 +75,7 @@ class TypeNumber extends TypeScalar
     public function multipleOf(\Brick\Math\BigNumber|int|float|string $number, Options $options = null)
     {
         $ruleID = self::ID_NUMBER_MULTIPLE_OF;
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage("number.{$ruleID}");
 
         $rule = V::rule($ruleID, function (ContextInterface $c) use ($number): bool {
@@ -95,7 +96,7 @@ class TypeNumber extends TypeScalar
     public function decimalPartMin(\Brick\Math\BigNumber|int|float|string $min, Options $options = null)
     {
         $ruleID = self::ID_NUMBER_DECIMAL_PART_MIN;
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage("number.{$ruleID}");
 
         $rule = V::rule($ruleID, function (ContextInterface $c) use ($min): bool {
@@ -119,7 +120,7 @@ class TypeNumber extends TypeScalar
     public function fractionalPartMax(\Brick\Math\BigNumber|int|float|string $max, Options $options = null)
     {
         $ruleID = self::ID_NUMBER_DECIMAL_PART_MAX;
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage("number.{$ruleID}");
 
         $rule = V::rule($ruleID, function (ContextInterface $c) use ($max): bool {
@@ -143,7 +144,7 @@ class TypeNumber extends TypeScalar
     public function between($min, $max, Options $options = null)
     {
         $ruleid = self::ID_NUMBER_BETWEEN;
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage("number.{$ruleid}");
         $rule = new Rule($ruleid, function (ContextInterface $c) use ($min, $max): bool {
             $value = $c->value;
@@ -159,7 +160,7 @@ class TypeNumber extends TypeScalar
     public function notBetween($min, $max, Options $options = null)
     {
         $ruleid = self::ID_NUMBER_NOT_BETWEEN;
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage("number.{$ruleid}");
         $rule = new Rule($ruleid, function (ContextInterface $c) use ($min, $max): bool {
             $value = $c->value;
@@ -175,7 +176,7 @@ class TypeNumber extends TypeScalar
     public function toString($errormessage = null, Options $options = null)
     {
         $ruleid = self::ID_NUMBER_TO_STRING;
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage("number.{$ruleid}");
 
         $transformer = Transformers::numberToString($errormessage);

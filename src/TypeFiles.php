@@ -2,13 +2,14 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\ArrayContext;
-use Kedniko\Vivy\Contracts\ContextInterface;
-use Kedniko\Vivy\Contracts\TypeInterface;
-use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Core\Rule;
-use Kedniko\Vivy\Core\Validated;
 use Kedniko\Vivy\Transformer;
+use Kedniko\Vivy\ArrayContext;
+use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Core\Validated;
+use Kedniko\Vivy\Contracts\TypeInterface;
+use Kedniko\Vivy\Contracts\ContextInterface;
 
 final class TypeFiles extends TypeCompound
 {
@@ -24,7 +25,7 @@ final class TypeFiles extends TypeCompound
 
     public function count($count, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di file errato';
 
         $middleware = new Rule('count', function (ContextInterface $c) use ($count): bool {
@@ -45,7 +46,7 @@ final class TypeFiles extends TypeCompound
 
     public function minCount($minCount, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di file troppo piccolo';
 
         $middleware = new Rule('minCount', function (ContextInterface $c) use ($minCount): bool {
@@ -66,7 +67,7 @@ final class TypeFiles extends TypeCompound
 
     public function maxCount($maxCount, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di file troppo grande';
 
         $middleware = new Rule('maxCount', function (ContextInterface $c) use ($maxCount): bool {
@@ -91,7 +92,7 @@ final class TypeFiles extends TypeCompound
      */
     public function totalSize(mixed $totalSize, string $unit = 'B', Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensioni files non accettate';
 
         $totalSize = $this->convertUnit($totalSize, $unit, 'B');
@@ -116,7 +117,7 @@ final class TypeFiles extends TypeCompound
      */
     public function minTotalSize(mixed $minTotalSize, string $unit = 'B', Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensioni files troppo piccole';
 
         $minTotalSize = $this->convertUnit($minTotalSize, $unit, 'B');
@@ -141,7 +142,7 @@ final class TypeFiles extends TypeCompound
      */
     public function maxTotalSize(mixed $maxTotalSize, string $unit = 'B', Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensioni files troppo grandi';
 
         $maxTotalSize = $this->convertUnit($maxTotalSize, $unit, 'B');
@@ -175,7 +176,7 @@ final class TypeFiles extends TypeCompound
 
     public function each(TypeFile $fileField, bool|callable $stopOnItemFailure = false, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
 
         $rule = $this->getEachRule($fileField, $stopOnItemFailure, $options->getErrorMessage());
         $this->addRule($rule, $options);

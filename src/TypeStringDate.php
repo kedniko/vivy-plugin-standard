@@ -7,13 +7,14 @@ use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Messages\RuleMessage;
+use Kedniko\Vivy\Support\Util;
 use Kedniko\Vivy\Transformer;
 
 final class TypeStringDate extends TypeString
 {
     public function toFormat($format, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $sourceFormat = $this->state->_extra['format'];
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage();
 
@@ -34,7 +35,7 @@ final class TypeStringDate extends TypeString
 
     public function minDate(DateTime|string $date, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('date.min');
         $sourceFormat = Helpers::issetOrFail($this->state->_extra['format']);
         if (is_string($date)) {
@@ -47,7 +48,7 @@ final class TypeStringDate extends TypeString
 
     public function maxDate(DateTime|string $date, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage();
         $sourceFormat = Helpers::issetOrFail($this->state->_extra['format']);
         if (is_string($date)) {
@@ -60,7 +61,7 @@ final class TypeStringDate extends TypeString
 
     public function between(DateTime|string $minDate, DateTime|string $maxDate, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('date.between');
         $sourceFormat = Helpers::issetOrFail($this->state->_extra['format']);
         if (is_string($minDate)) {
@@ -76,7 +77,7 @@ final class TypeStringDate extends TypeString
 
     public function notBetweenInclusive(DateTime $minDate, DateTime $maxDate, Options $options = null)
     {
-        $options = Options::build($options, func_get_args());
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('date.between');
         $sourceFormat = Helpers::issetOrFail($this->state->_extra['format']);
         $this->addRule(Rules::notBetween($minDate, $maxDate, $sourceFormat, $errormessage), $options);

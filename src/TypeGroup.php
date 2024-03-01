@@ -157,9 +157,9 @@ final class TypeGroup extends TypeCompound
     private function buildFieldFromString(string $setup)
     {
         $type = $this->getNewUnkownField();
-        foreach (explode('|', $setup) as $rule) {
-            $this->applyRuleOnField($rule, $type);
-        }
+        // foreach (explode('|', $setup) as $rule) {
+        //     $this->applyRuleOnField($rule, $type);
+        // }
 
         return $type;
     }
@@ -177,7 +177,7 @@ final class TypeGroup extends TypeCompound
         return V::group($setup);
     }
 
-    private function getFieldsFromAssociativeArraySetup($setupArray): LinkedList
+    private function getFieldsFromAssociativeArraySetup(array $setupArray): LinkedList
     {
         $types = new LinkedList();
 
