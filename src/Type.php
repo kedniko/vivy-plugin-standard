@@ -2,6 +2,7 @@
 
 namespace Kedniko\VivyPluginStandard;
 
+use Kedniko\Vivy\Rules;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Support\Util;
 use Kedniko\Vivy\Type as CoreType;
@@ -25,14 +26,6 @@ class Type extends CoreType
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('valueNotAllowed');
         $this->addRule(Rules::notEquals($value, $strict, $errormessage), $options);
-
-        return $this;
-    }
-
-    public function allowNull()
-    {
-        $this->removeRule(RulesEnum::ID_NOT_NULL->value);
-        $this->state->setNotNull(false);
 
         return $this;
     }

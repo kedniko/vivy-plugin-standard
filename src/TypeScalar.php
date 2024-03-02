@@ -2,12 +2,10 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Support\Util;
 use Kedniko\VivyPluginStandard\Type;
 use Kedniko\Vivy\Messages\RuleMessage;
-use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 
 class TypeScalar extends Type

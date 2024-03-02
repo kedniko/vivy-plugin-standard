@@ -3,30 +3,24 @@
 namespace Kedniko\VivyPluginStandard;
 
 use DateTime;
-use Brick\Math\BigDecimal;
 use Kedniko\Vivy\Context;
+use Brick\Math\BigDecimal;
 use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Support\Str;
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Support\Util;
 use Kedniko\Vivy\Core\Constants;
 use Kedniko\Vivy\Core\Undefined;
 use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\VivyPluginStandard\Enum\RulesEnum;
-use Kedniko\Vivy\Exceptions\VivyMiddlewareNotFoundException;
-use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Enum\RulesEnum as CoreRulesEnum;
 
 final class Rules
 {
 
-    public static function getInvisibleKeys(): array
-    {
-        return [
-            RulesEnum::ID_GROUP->value,
-            RulesEnum::ID_EACH->value,
-        ];
-    }
+
 
     // public static function call(string $id): Rule
     // {
@@ -57,14 +51,6 @@ final class Rules
     //     return $rule;
     // }
 
-    public static function required(string|callable $errormessage = null): Rule
-    {
-        $ruleID = RulesEnum::ID_REQUIRED->value;
-        $ruleFn = null;
-        $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
-
-        return new Rule($ruleID, $ruleFn, $errormessage);
-    }
 
     public static function notFalsy(string|callable $errormessage = null): Rule
     {
@@ -75,67 +61,8 @@ final class Rules
         return new Rule($ruleID, $ruleFn, $errormessage);
     }
 
-    public static function notNull(string|callable $errormessage = null): Rule
-    {
-        $ruleID = RulesEnum::ID_NOT_NULL->value;
-        $ruleFn = fn (ContextInterface $c): bool => $c->value !== null;
 
-        $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
 
-        return new Rule($ruleID, $ruleFn, $errormessage);
-    }
-
-    public static function null(string|callable $errormessage = null): Rule
-    {
-        $ruleID = RulesEnum::ID_NULL->value;
-        $ruleFn = fn (ContextInterface $c): bool => $c->value === null;
-
-        $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
-
-        return new Rule($ruleID, $ruleFn, $errormessage);
-    }
-
-    public static function notEmptyString(string|callable $errormessage = null): Rule
-    {
-        $ruleID = RulesEnum::ID_NOT_EMPTY_STRING->value;
-        $ruleFn = function (ContextInterface $c): bool {
-            // $trim = Helpers::valueOrFunction($trim, $c);
-            $value = $c->value;
-            if (!is_string($value)) {
-                return $c->value !== '';
-            }
-            // if (!$trim) {
-            //     return $c->value !== '';
-            // }
-            $value = trim($value);
-
-            return $c->value !== '';
-        };
-        $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
-
-        return new Rule($ruleID, $ruleFn, $errormessage);
-    }
-
-    public static function emptyString(string|callable $errormessage = null): Rule
-    {
-        $ruleID = RulesEnum::ID_EMPTY_STRING->value;
-        $ruleFn = function (ContextInterface $c): bool {
-            // $trim = Helpers::valueOrFunction($trim, $c);
-            $value = $c->value;
-            if (!is_string($value)) {
-                return $c->value === '';
-            }
-            // if (!$trim) {
-            //     return $c->value === '';
-            // }
-            $value = trim($value);
-
-            return $c->value === '';
-        };
-        $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
-
-        return new Rule($ruleID, $ruleFn, $errormessage);
-    }
 
     public static function string(string|callable $errormessage = null): Rule
     {
@@ -401,35 +328,7 @@ final class Rules
         return new Rule($ruleID, $ruleFn, $errormessage);
     }
 
-    public static function equals(mixed $value, bool $strict, string|callable $errormessage = null): Rule
-    {
-        $ruleID = 'equals';
-        $ruleFn = function (ContextInterface $c) use ($value, $strict): bool {
-            $value = Helpers::valueOrFunction($value, $c);
-            $strict = Helpers::valueOrFunction($strict, $c);
 
-            return $strict === true ? $c->value === $value : $c->value == $value;
-        };
-
-        $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
-
-        return new Rule($ruleID, $ruleFn, $errormessage);
-    }
-
-    public static function notEquals(mixed $value, bool $strict, string|callable $errormessage = null): Rule
-    {
-        $ruleID = 'notEquals';
-        $ruleFn = function (ContextInterface $c) use ($value, $strict): bool {
-            $value = Helpers::valueOrFunction($value, $c);
-            $strict = Helpers::valueOrFunction($strict, $c);
-
-            return $strict === true ? $c->value !== $value : $c->value != $value;
-        };
-
-        $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
-
-        return new Rule($ruleID, $ruleFn, $errormessage);
-    }
 
     public static function phone(string|callable $errormessage = null): Rule
     {
@@ -661,6 +560,9 @@ final class Rules
             $array = Helpers::valueOrFunction($array, $c);
             $strict = Helpers::valueOrFunction($strict, $c);
 
+            if ($c->value === 'nazionale') {
+                $a = 1;
+            }
             return in_array($c->value, $array, $strict);
         };
 

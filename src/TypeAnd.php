@@ -55,7 +55,6 @@ final class TypeAnd extends Type
 
                 Util::clone($c->value);
                 $validated = $type->validate($c->value, $c);
-                $errors = $type->_extra['or_errors'] ?? [];
                 if ($isNot) {
                     return false;
                 }

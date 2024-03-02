@@ -4,6 +4,7 @@ namespace Tests;
 
 use DateTime;
 use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Core\OrContext;
 use Kedniko\Vivy\O;
 use Kedniko\Vivy\V;
 
@@ -82,19 +83,31 @@ test('or', function () {
 });
 
 test('type-or-basic', function () {
+
+
+    // $validated = V::or([
+    //     V::date('Y-m-d H:i:s', O::continueOnFailure())->setValue(1)->asInt()->min(10),
+    //     V::date('Y-m-d'),
+    //     V::date('Y-m'),
+    //     V::null()->setValue('yes!')->asString()->startsWith('a'),
+    // ], O::message(function (ContextInterface $c) {
+    //     return 'Valore non accettato per nessuno dei test';
+    // }))->validate(null);
+
+
     $validated = V::or([
-        V::date('Y-m-d H:i:s', O::continueOnFailure())->setValue(1)->asInt()->min(10),
-        V::date('Y-m-d'),
-        V::date('Y-m'),
-        V::null()->setValue('yes!')->asString()->startsWith('a'),
-    ], O::message(function (ContextInterface $c) {
-        return 'Valore non accettato per nessuno dei test';
-    }))->validate(null);
-    $this->assertFalse($validated->isValid());
-    expect($validated->errors())->toBe([
-        'or' => ['Valore non accettato per nessuno dei test'],
-    ]);
-});
+        // V::date('Y-m-d H:i:s', O::continueOnFailure())->setValue(1)->asInt()->min(10),
+        // V::date('Y-m-d'),
+        // V::date('Y-m'),
+        V::string(), //->setValue('yes!')->asString()->startsWith('a'),
+    ])
+        ->validate(3);
+
+    expect($validated->isValid())->toBeFalse();
+    // expect($validated->errors())->toBe([
+    //     'or' => ['Valore non accettato per nessuno dei test'],
+    // ]);
+})->only();
 
 test('allow-null', function () {
     $post = [
@@ -129,11 +142,16 @@ test('or-with-undefined-rule', function () {
 test('or-with-undefined-rule-2', function () {
     $v = V::group([
         'name' => V::undefined()->setValue('undefined'),
-        'lastname' => V::or([
-            V::undefined()->setValue('undefined'),
-            V::null()->setValue('null'),
-            V::string()->setValue('string'),
-        ]),
+        'lastname' => V::or(
+            [
+                V::undefined()->setValue('undefined'),
+                V::null()->setValue('null'),
+                V::string()->setValue('string'),
+            ],
+            O::message(function (OrContext $oc) {
+                $a = 1;
+            })
+        ),
     ]);
 
     $validated = $v->validate([

@@ -2,9 +2,11 @@
 
 namespace Tests;
 
+use Kedniko\Vivy\O;
+use Kedniko\Vivy\V;
 use Kedniko\Vivy\ArrayContext;
 use Kedniko\Vivy\Core\GroupContext;
-use Kedniko\Vivy\V;
+use Kedniko\Vivy\Contracts\ContextInterface;
 
 $faker = \Faker\Factory::create();
 uses()->group('array');
@@ -60,10 +62,6 @@ test('array-group', function () use ($faker) {
     $validated = $v->validate($data);
 
     expect($validated->isValid())->toBeTrue();
-
-    // $this->assertEquals($validated->value(), $expected, 'Validated post non è expected');
-    // $this->assertTrue($isvalid, 'Non è valido');
-    // $this->assertTrue($ok === 'edited', 'onValid non funziona');
 });
 
 test('group-key-value', function () {
@@ -98,6 +96,48 @@ test('group-key-value', function () {
             }
         )),
     ])->validate($data);
+
+    expect($validated->isValid())->toBeTrue();
+});
+
+
+test('in-array', function () {
+
+    $message = O::message(function (ContextInterface $c) {
+        $m = $c->getMiddleware();
+        $id = $m->getID();
+        $value = $c->value;
+        return "Received [{$value}]";
+    });
+
+    $orNull = function ($rule) use ($message) {
+        return V::or([
+            V::undefined()->setValue(null),
+            V::is([])->setValue(null),
+            V::is('')->setValue(null),
+            V::null()->setValue(null),
+            $rule,
+        ], $message);
+    };
+
+    $ruleLetters = V::string()
+        ->in(
+            ['6T', 'E2', 'E3', 'E4', 'E5', 'E6',],
+            options: O::message(function (ContextInterface $c) {
+                $m = $c->getMiddleware();
+                $id = $m->getID();
+                $value = $c->value;
+                return "Received [{$value}]";
+            })
+        )
+        ->length(2);
+
+    $validated = V::group([
+        "letters" => $orNull($ruleLetters),
+    ])
+        ->validate([
+            "letters" => "6T",
+        ]);
 
     expect($validated->isValid())->toBeTrue();
 });
