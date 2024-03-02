@@ -132,6 +132,9 @@ test('in-array', function () {
         )
         ->length(2);
 
+    $validated = $ruleLetters->validate("6T");
+    expect($validated->isValid())->toBeTrue();
+
     $validated = V::group([
         "letters" => $orNull($ruleLetters),
     ])
