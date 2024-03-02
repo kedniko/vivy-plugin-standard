@@ -8,6 +8,7 @@ use Kedniko\Vivy\ArrayContext;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Support\Util;
 use Kedniko\Vivy\Core\Validated;
+use Kedniko\Vivy\Type\TypeCompound;
 use Kedniko\Vivy\Contracts\TypeInterface;
 use Kedniko\Vivy\Contracts\ContextInterface;
 

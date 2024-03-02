@@ -6,6 +6,8 @@ use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Rules as CoreRules;
+use Kedniko\VivyPluginStandard\Rules;
 use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\Messages\TransformerMessage;
@@ -67,8 +69,8 @@ final class TypeBool extends TypeScalar
         $ruleID = TransformersEnum::ID_BOOL_TO_INT->value;
         $type = TypeInt::new($this);
         $type->required($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.required"));
-        $type->addRule(Rules::notNull($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notNull")));
-        $type->addRule(Rules::notEmptyString($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notEmptyString")));
+        $type->addRule(CoreRules::notNull($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notNull")));
+        $type->addRule(CoreRules::notEmptyString($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notEmptyString")));
         $type->addRule(Rules::int($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.type")), $options);
         $type->addTransformer(Transformers::boolToInt($errormessage), $options);
 
@@ -83,8 +85,8 @@ final class TypeBool extends TypeScalar
         $ruleID = TransformersEnum::ID_BOOL_TO_STRING->value;
         $type = TypeString::new($this);
         $type->required($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.required"));
-        $type->addRule(Rules::notNull($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notNull")));
-        $type->addRule(Rules::notEmptyString($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notEmptyString")));
+        $type->addRule(CoreRules::notNull($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notNull")));
+        $type->addRule(CoreRules::notEmptyString($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.notEmptyString")));
         $type->addRule(Rules::bool($errormessage ?: RuleMessage::getErrorMessage("{$ruleID}.type")), $options);
         $type->addTransformer(Transformers::boolToString($errormessage), $options);
 

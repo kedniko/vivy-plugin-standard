@@ -2,17 +2,23 @@
 
 namespace Kedniko\VivyPluginStandard;
 
+use Kedniko\Vivy\V;
+use Kedniko\Vivy\Type;
 use Kedniko\Vivy\Callback;
-use Kedniko\Vivy\Contracts\TypeInterface;
+use Kedniko\Vivy\Type\TypeOr;
 use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Interfaces\VivyPlugin;
-use Kedniko\Vivy\Messages\RuleMessage;
-use Kedniko\VivyPluginStandard\Enum\RulesEnum;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Type\TypeAny;
+use Kedniko\Vivy\Type\TypeGroup;
 use Kedniko\Vivy\Support\Registrar;
 use Kedniko\Vivy\Support\TypeProxy;
-use Kedniko\Vivy\Support\Util;
-use Kedniko\Vivy\Type;
-use Kedniko\Vivy\V;
+use Kedniko\Vivy\Rules as CoreRules;
+use Kedniko\VivyPluginStandard\Rules;
+use Kedniko\Vivy\Messages\RuleMessage;
+use Kedniko\Vivy\Interfaces\VivyPlugin;
+use Kedniko\Vivy\Contracts\TypeInterface;
+use Kedniko\VivyPluginStandard\TypeFiles;
+use Kedniko\Vivy\Enum\RulesEnum as CoreRulesEnum;
 
 final class StandardLibrary implements VivyPlugin
 {
@@ -194,7 +200,7 @@ final class StandardLibrary implements VivyPlugin
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options, $value, $strict) {
             $type = TypeAny::new(from: $obj);
-            $type->addRule(Rules::equals($value, $strict, $options->getErrorMessage()), $options);
+            $type->addRule(CoreRules::equals($value, $strict, $options->getErrorMessage()), $options);
 
             return $type;
         };
@@ -205,7 +211,7 @@ final class StandardLibrary implements VivyPlugin
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options, $value, $strict) {
             $type = TypeAny::new(from: $obj);
-            $type->addRule(Rules::notEquals($value, $strict, $options->getErrorMessage()), $options);
+            $type->addRule(CoreRules::notEquals($value, $strict, $options->getErrorMessage()), $options);
 
             return $type;
         };
@@ -390,7 +396,7 @@ final class StandardLibrary implements VivyPlugin
         return function (?TypeInterface $obj) use ($options) {
             $type = TypeNull::new(from: $obj);
             $type->allowNull();
-            $type->addRule(Rules::null($options->getErrorMessage() ?: RuleMessage::getErrorMessage('default.' . RulesEnum::ID_NULL->value)), $options);
+            $type->addRule(CoreRules::null($options->getErrorMessage() ?: RuleMessage::getErrorMessage('default.' . CoreRulesEnum::ID_NULL->value)), $options);
 
             return $type;
         };
@@ -401,8 +407,8 @@ final class StandardLibrary implements VivyPlugin
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options, $trim) {
             $type = TypeString::new(from: $obj);
-            $err = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('default.' . RulesEnum::ID_NOT_EMPTY_STRING->value);
-            $type->addRule(Rules::notEmptyString($trim, $err, $options));
+            $err = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('default.' . CoreRulesEnum::ID_NOT_EMPTY_STRING->value);
+            $type->addRule(CoreRules::notEmptyString($trim, $err, $options));
 
             return $type;
         };
@@ -413,8 +419,8 @@ final class StandardLibrary implements VivyPlugin
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         return function (?TypeInterface $obj) use ($options, $trim) {
             $type = TypeStringEmpty::new(from: $obj);
-            $err = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('default.' . RulesEnum::ID_EMPTY_STRING->value);
-            $type->addRule(Rules::emptyString($trim, $err, $options));
+            $err = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('default.' . CoreRulesEnum::ID_EMPTY_STRING->value);
+            $type->addRule(CoreRules::emptyString($trim, $err, $options));
             $type->allowEmptyString();
 
             return $type;
@@ -425,7 +431,7 @@ final class StandardLibrary implements VivyPlugin
     {
         return function (?TypeInterface $obj) use ($default) {
             $type = Type::new(from: $obj);
-            $type->removeRule(RulesEnum::ID_REQUIRED->value);
+            $type->removeRule(CoreRulesEnum::ID_REQUIRED->value);
             $type->state->setRequired(false);
             if (count(func_get_args())) {
                 $type->state->setValueIfOptionalNotExists($default);
@@ -447,7 +453,7 @@ final class StandardLibrary implements VivyPlugin
             if ($enableDafault) {
                 $type->_extra = ['default' => $value];
             }
-            $type->addRule(Rules::undefined(), $options);
+            $type->addRule(CoreRules::undefined(), $options);
 
             return $type;
         };

@@ -44,6 +44,5 @@ enum RulesEnum: string
   case ID_SCALAR = 'scalar';
   case ID_IN_ARRAY = 'inArray';
   case ID_NOT_IN_ARRAY = 'notInArray';
-  case ID_UNDEFINED = 'undefined';
   case ID_SET_VALUE = 'setValue';
 }

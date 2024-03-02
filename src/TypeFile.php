@@ -5,6 +5,7 @@ namespace Kedniko\VivyPluginStandard;
 use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Type\TypeCompound;
 use Kedniko\Vivy\Contracts\ContextInterface;
 
 final class TypeFile extends TypeCompound

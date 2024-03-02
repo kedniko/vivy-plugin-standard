@@ -107,7 +107,7 @@ test('type-or-basic', function () {
     // expect($validated->errors())->toBe([
     //     'or' => ['Valore non accettato per nessuno dei test'],
     // ]);
-})->only();
+});
 
 test('allow-null', function () {
     $post = [

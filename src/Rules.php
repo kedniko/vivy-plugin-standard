@@ -287,17 +287,6 @@ final class Rules
         return new Rule($ruleID, $ruleFn, $errormessage);
     }
 
-    public static function undefined(string|callable $errormessage = null): Rule
-    {
-        $ruleID = RulesEnum::ID_UNDEFINED->value;
-        $ruleFn = function (ContextInterface $c): bool {
-            return $c->value instanceof Undefined;
-        };
-
-        $errormessage = $errormessage ?: RuleMessage::getErrorMessage('default.' . $ruleID);
-
-        return new Rule($ruleID, $ruleFn, $errormessage);
-    }
 
     public static function bool(string|callable $errormessage = null): Rule
     {

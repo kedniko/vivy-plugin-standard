@@ -7,6 +7,7 @@ use Kedniko\Vivy\Support\Util;
 use Kedniko\VivyPluginStandard\Type;
 use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\VivyPluginStandard\Enum\RulesEnum;
+use Kedniko\Vivy\Enum\RulesEnum as CoreRulesEnum;
 
 class TypeScalar extends Type
 {
@@ -58,7 +59,7 @@ class TypeScalar extends Type
 
     public function allowEmptyString()
     {
-        $this->removeRule(RulesEnum::ID_NOT_EMPTY_STRING->value);
+        $this->removeRule(CoreRulesEnum::ID_NOT_EMPTY_STRING->value);
         $this->state->setNotEmptyString(false);
 
         return $this;
