@@ -9,19 +9,19 @@ use Kedniko\Vivy\Support\TypeProxy;
 
 final class TypeStringFloat extends TypeStringNumber
 {
-    public function toInteger(Options $options = null)
-    {
-        $options = Helpers::getOptions($options);
-        $options->setArgs(func_get_args());
-        $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('stringToInt');
+    // public function toInteger(Options $options = null)
+    // {
+    //     $options = Helpers::getOptions($options);
+    //     $options->setArgs(func_get_args());
+    //     $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('stringToInt');
 
-        if (!(new TypeProxy($this))->hasRule('intString')) {
-            $this->addRule(Rules::intString($options->getErrorMessage()), $options);
-        }
+    //     if (!(new TypeProxy($this))->hasRule('intString')) {
+    //         $this->addRule(Rules::intString($options->getErrorMessage()), $options);
+    //     }
 
-        $transformer = Transformers::stringToInt($errormessage);
-        $this->addTransformer($transformer, $options);
+    //     $transformer = Transformers::stringToInt($errormessage);
+    //     $this->addTransformer($transformer, $options);
 
-        return TypeInt::new($this);
-    }
+    //     return TypeInt::new($this);
+    // }
 }
