@@ -2,15 +2,15 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Core\Rule;
-use Kedniko\Vivy\Transformer;
 use Kedniko\Vivy\ArrayContext;
-use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Support\Util;
-use Kedniko\Vivy\Core\Validated;
-use Kedniko\Vivy\Type\TypeCompound;
-use Kedniko\Vivy\Contracts\TypeInterface;
 use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Contracts\TypeInterface;
+use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Core\Validated;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Transformer;
+use Kedniko\Vivy\Type\TypeCompound;
 
 final class TypeFiles extends TypeCompound
 {
@@ -24,7 +24,7 @@ final class TypeFiles extends TypeCompound
      */
     private const UNITS = ['B', 'KB', 'MB', 'GB'];
 
-    public function count($count, Options $options = null)
+    public function count($count, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di file errato';
@@ -45,7 +45,7 @@ final class TypeFiles extends TypeCompound
         return $this;
     }
 
-    public function minCount($minCount, Options $options = null)
+    public function minCount($minCount, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di file troppo piccolo';
@@ -66,7 +66,7 @@ final class TypeFiles extends TypeCompound
         return $this;
     }
 
-    public function maxCount($maxCount, Options $options = null)
+    public function maxCount($maxCount, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di file troppo grande';
@@ -89,9 +89,9 @@ final class TypeFiles extends TypeCompound
     }
 
     /**
-     * @param  string  $unit `B`|`KB`|`MB`|`GB`
+     * @param  string  $unit  `B`|`KB`|`MB`|`GB`
      */
-    public function totalSize(mixed $totalSize, string $unit = 'B', Options $options = null)
+    public function totalSize(mixed $totalSize, string $unit = 'B', ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensioni files non accettate';
@@ -114,9 +114,9 @@ final class TypeFiles extends TypeCompound
     }
 
     /**
-     * @param  string  $unit `B`|`KB`|`MB`|`GB`
+     * @param  string  $unit  `B`|`KB`|`MB`|`GB`
      */
-    public function minTotalSize(mixed $minTotalSize, string $unit = 'B', Options $options = null)
+    public function minTotalSize(mixed $minTotalSize, string $unit = 'B', ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensioni files troppo piccole';
@@ -139,9 +139,9 @@ final class TypeFiles extends TypeCompound
     }
 
     /**
-     * @param  string  $unit `B`|`KB`|`MB`|`GB`
+     * @param  string  $unit  `B`|`KB`|`MB`|`GB`
      */
-    public function maxTotalSize(mixed $maxTotalSize, string $unit = 'B', Options $options = null)
+    public function maxTotalSize(mixed $maxTotalSize, string $unit = 'B', ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensioni files troppo grandi';
@@ -166,7 +166,7 @@ final class TypeFiles extends TypeCompound
     /**
      * @param  array  $args
      */
-    public function toJson(Options $options = null)
+    public function toJson(?Options $options = null)
     {
         $errormessage = $options->getErrorMessage() ?: 'TRANSFORMER: toJson';
         $transformer = new Transformer('toJson', fn (ContextInterface $c): string => json_encode($c->value, JSON_THROW_ON_ERROR), $errormessage);
@@ -175,7 +175,7 @@ final class TypeFiles extends TypeCompound
         return $this;
     }
 
-    public function each(TypeFile $fileField, bool|callable $stopOnItemFailure = false, Options $options = null)
+    public function each(TypeFile $fileField, bool|callable $stopOnItemFailure = false, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
 
@@ -188,8 +188,8 @@ final class TypeFiles extends TypeCompound
     private function getEachRule(TypeInterface $type, bool|callable $stopOnItemFailure, $errormessage): Rule
     {
         $ruleFn = function (ContextInterface $c) use ($type, $stopOnItemFailure): \Kedniko\Vivy\Core\Validated {
-            if (!is_array($c->value)) {
-                throw new \Exception('This is not an array. Got [' . gettype($c->value) . ']: ' . json_encode($c->value, JSON_THROW_ON_ERROR), 1);
+            if (! is_array($c->value)) {
+                throw new \Exception('This is not an array. Got ['.gettype($c->value).']: '.json_encode($c->value, JSON_THROW_ON_ERROR), 1);
             }
 
             $arrayContext = new ArrayContext();
@@ -241,8 +241,8 @@ final class TypeFiles extends TypeCompound
     }
 
     /**
-     * @param  mixed  $from `B`|`KB`|`MB`|`GB`
-     * @param  mixed  $to `B`|`KB`|`MB`|`GB`
+     * @param  mixed  $from  `B`|`KB`|`MB`|`GB`
+     * @param  mixed  $to  `B`|`KB`|`MB`|`GB`
      */
     private function convertUnit(mixed $value, mixed $from, string $to)
     {

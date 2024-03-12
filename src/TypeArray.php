@@ -2,27 +2,27 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\V;
-use Kedniko\Vivy\Core\Rule;
-use Kedniko\Vivy\Transformer;
 use Kedniko\Vivy\ArrayContext;
-use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Support\Util;
-use Kedniko\Vivy\Core\Validated;
-use Kedniko\Vivy\Type\TypeCompound;
-use Kedniko\Vivy\Contracts\TypeInterface;
 use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Contracts\TypeInterface;
+use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Core\Validated;
 use Kedniko\Vivy\Enum\RulesEnum as CoreRulesEnum;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Transformer;
+use Kedniko\Vivy\Type\TypeCompound;
+use Kedniko\Vivy\V;
 
 final class TypeArray extends TypeCompound
 {
-    public function count($count, Options $options = null)
+    public function count($count, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di elementi non ammesso';
 
         $middleware = new Rule('count', function (ContextInterface $c) use ($count): bool {
-            if (!is_array($c->value)) {
+            if (! is_array($c->value)) {
                 return false;
             }
 
@@ -34,13 +34,13 @@ final class TypeArray extends TypeCompound
         return $this;
     }
 
-    public function minCount($minCount, Options $options = null)
+    public function minCount($minCount, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di elementi troppo piccolo';
 
         $middleware = new Rule('minCount', function (ContextInterface $c) use ($minCount): bool {
-            if (!is_array($c->value)) {
+            if (! is_array($c->value)) {
                 return false;
             }
 
@@ -52,12 +52,12 @@ final class TypeArray extends TypeCompound
         return $this;
     }
 
-    public function maxCount($maxCount, Options $options = null)
+    public function maxCount($maxCount, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Numero di elementi troppo grande';
         $middleware = new Rule('maxCount', function (ContextInterface $c) use ($maxCount): bool {
-            if (!is_array($c->value)) {
+            if (! is_array($c->value)) {
                 return false;
             }
 
@@ -72,7 +72,7 @@ final class TypeArray extends TypeCompound
     /**
      * @param  array  $args
      */
-    public function toJson(Options $options = null)
+    public function toJson(?Options $options = null)
     {
         $errormessage = $options->getErrorMessage() ?: 'TRANSFORMER: toJson';
         $transformer = new Transformer('toJson', fn (ContextInterface $c): string => json_encode($c->value, JSON_THROW_ON_ERROR), $errormessage);
@@ -81,7 +81,7 @@ final class TypeArray extends TypeCompound
         return $this;
     }
 
-    public function each(TypeInterface|array $type, bool|callable $stopOnItemFailure = false, Options $options = null)
+    public function each(TypeInterface|array $type, bool|callable $stopOnItemFailure = false, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
 
@@ -99,8 +99,8 @@ final class TypeArray extends TypeCompound
     {
         $ruleID = CoreRulesEnum::ID_EACH->value;
         $ruleFn = function (ContextInterface $c) use ($type, $stopOnItemFailure): \Kedniko\Vivy\Core\Validated {
-            if (!is_array($c->value)) {
-                throw new \Exception('This is not an array. Got [' . gettype($c->value) . ']: ' . json_encode($c->value, JSON_THROW_ON_ERROR), 1);
+            if (! is_array($c->value)) {
+                throw new \Exception('This is not an array. Got ['.gettype($c->value).']: '.json_encode($c->value, JSON_THROW_ON_ERROR), 1);
             }
 
             $arrayContext = new ArrayContext();
@@ -168,8 +168,8 @@ final class TypeArray extends TypeCompound
     // 	$types = (new TypeProxy($type))->getChildState()->getFields();
     // 	$type->group($types, true, $options);
 
-    // 	// share state
-    // 	$type->state = $this->state;
+    // 	// share setup
+    // 	$type->setup = $this->setup;
     // 	return $type;
     // }
 }

@@ -2,15 +2,15 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\V;
+use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\Options;
 use Kedniko\Vivy\Support\Util;
-use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\V;
 
 final class TypeStringEmail extends TypeString
 {
-    public function checkValidDomain($record = 'MX', Options $options = null)
+    public function checkValidDomain($record = 'MX', ?Options $options = null)
     {
         $record = Helpers::notNullOrDefault($record, 'MX');
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
@@ -28,7 +28,7 @@ final class TypeStringEmail extends TypeString
         return $this;
     }
 
-    public function domainIs($domain, Options $options = null)
+    public function domainIs($domain, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Il dominio non corrisponde';
@@ -45,7 +45,7 @@ final class TypeStringEmail extends TypeString
         return $this;
     }
 
-    public function domainInArray($domainArray, Options $options = null)
+    public function domainInArray($domainArray, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Il dominio non corrisponde';
@@ -62,7 +62,7 @@ final class TypeStringEmail extends TypeString
         return $this;
     }
 
-    public function tldIs($tld, Options $options = null)
+    public function tldIs($tld, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Il Top-level-domain non valido';
@@ -79,7 +79,7 @@ final class TypeStringEmail extends TypeString
         return $this;
     }
 
-    public function tldInArray($tldArray, Options $options = null)
+    public function tldInArray($tldArray, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Il Top-level-domain non valido';

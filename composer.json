@@ -44,12 +44,6 @@
             "pestphp/pest-plugin": true
         }
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../vivy"
-        }
-    ],
     "scripts": {
         "refacto": "rector",
         "lint": "pint",
@@ -64,5 +58,11 @@
             "@test:types",
             "@test:unit"
         ]
-    }
+    },
+    "repositories": [
+		{
+			"type": "path",
+			"url": "../vivy"
+		}
+	]
 }

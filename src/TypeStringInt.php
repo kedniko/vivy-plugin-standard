@@ -2,18 +2,16 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\V;
-use Kedniko\Vivy\Core\Helpers;
-use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Support\Util;
-use Kedniko\Vivy\Support\TypeProxy;
-use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\Vivy\Messages\TransformerMessage;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\V;
 
 final class TypeStringInt extends TypeStringNumber
 {
-    public function min($min, Options $options = null)
+    public function min($min, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('string.min');
@@ -22,7 +20,7 @@ final class TypeStringInt extends TypeStringNumber
         return $this;
     }
 
-    public function max($max, Options $options = null)
+    public function max($max, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('string.max');
@@ -31,16 +29,16 @@ final class TypeStringInt extends TypeStringNumber
         return $this;
     }
 
-    public function toInteger(Options $options = null)
+    public function toInteger(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('stringToInt');
 
-        if (!(new TypeProxy($this))->hasRule('intString')) {
+        if (! $this->getSetup()->hasRule('intString')) {
             $this->addRule(Rules::intString($options->getErrorMessage()), $options);
         }
 
-        $transformer = Transformers::stringToInt($errormessage);
+        $transformer = Transformers::stringNumberToInt($errormessage);
         $this->addTransformer($transformer, $options);
 
         return TypeInt::new($this);

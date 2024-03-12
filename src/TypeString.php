@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Transformer;
+use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\Core\Helpers;
 use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Support\Util;
 use Kedniko\Vivy\Messages\RuleMessage;
-use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\Messages\TransformerMessage;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\Transformer;
 
 class TypeString extends TypeScalar
 {
-    public function prefix($string, Options $options = null)
+    public function prefix($string, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('string.prefix');
         $transformer = new Transformer('prefix', function (ContextInterface $c): string {
             $prefix = Helpers::issetOrDefault($c->args()[0], '');
 
-            return $prefix . $c->value;
+            return $prefix.$c->value;
         }, $errormessage);
 
         $this->addTransformer($transformer, $options);
@@ -29,7 +29,7 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function trim($characters = " \t\n\r\0\x0B", Options $options = null)
+    public function trim($characters = " \t\n\r\0\x0B", ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('trim');
@@ -38,7 +38,7 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function ltrim($characters, Options $options = null)
+    public function ltrim($characters, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('ltrim');
@@ -47,7 +47,7 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function rtrim($characters, Options $options = null)
+    public function rtrim($characters, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('rtrim');
@@ -56,7 +56,7 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function toUppercase(Options $options = null)
+    public function toUppercase(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('toUpperCase');
@@ -65,16 +65,25 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function toFirstLetterUpperCase(Options $options = null)
+    public function toUpperCaseFirstLetter(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
-        $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('firstLetterUpperCase');
-        $this->addTransformer(Transformers::firstLetterUpperCase($errormessage), $options);
+        $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('upperCaseFirstLetter');
+        $this->addTransformer(Transformers::upperCaseFirstLetter($errormessage), $options);
 
         return $this;
     }
 
-    public function toLowercase(Options $options = null)
+    public function toUpperCaseFirstLetterEachWord($separators = " \t\r\n\f\v", ?Options $options = null)
+    {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('upperCaseFirstLetterEachWord');
+        $this->addTransformer(Transformers::upperCaseFirstLetterEachWord($separators, $errormessage), $options);
+
+        return $this;
+    }
+
+    public function toLowercase(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('toLowerCase');
@@ -83,16 +92,25 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function toFirstLetterLowerCase(Options $options = null)
+    public function toLowerCaseFirstLetter(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
-        $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('firstLetterLowerCase');
-        $this->addTransformer(Transformers::firstLetterLowerCase($errormessage), $options);
+        $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('lowerCaseFirstLetter');
+        $this->addTransformer(Transformers::lowerCaseFirstLetter($errormessage), $options);
 
         return $this;
     }
 
-    public function startsWith(string $startsWith, $ignoreCase = true, Options $options = null)
+    public function toReplace(array|string $search, array|string $replace, ?Options $options = null)
+    {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+        $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('toLowerCase');
+        $this->addTransformer(Transformers::toReplace($search, $replace, $errormessage), $options);
+
+        return $this;
+    }
+
+    public function startsWith(string $startsWith, $ignoreCase = true, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('string.startsWith');
@@ -101,7 +119,7 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function endsWith(string $endsWith, $ignoreCase = true, Options $options = null)
+    public function endsWith(string $endsWith, $ignoreCase = true, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('string.endsWith');
@@ -110,7 +128,7 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function contains(string $contains, $ignoreCase = true, Options $options = null)
+    public function contains(string $contains, $ignoreCase = true, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('string.contains');
@@ -119,7 +137,7 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function length(int $length, Options $options = null)
+    public function length(int $length, ?Options $options = null)
     {
         if ($length < 0) {
             throw new \InvalidArgumentException('Length must be greater than or equal to 0');
@@ -132,7 +150,7 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function minLength(int $length, Options $options = null)
+    public function minLength(int $length, ?Options $options = null)
     {
         if ($length < 0) {
             throw new \InvalidArgumentException('Length must be greater than or equal to 0');
@@ -145,7 +163,7 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function maxLength(int $length, Options $options = null)
+    public function maxLength(int $length, ?Options $options = null)
     {
         if ($length < 0) {
             throw new \InvalidArgumentException('Length must be greater than or equal to 0');
@@ -158,16 +176,16 @@ class TypeString extends TypeScalar
         return $this;
     }
 
-    public function intString(Options $options = null)
+    public function intString(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('intString.type');
         $this->addRule(Rules::intString($errormessage), $options);
 
-        return $this;
+        return TypeStringInt::new($this);
     }
 
-    public function bool(Options $options = null)
+    public function bool(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
 
@@ -175,6 +193,16 @@ class TypeString extends TypeScalar
         $this->addRule(Rules::boolString($errormessage), $options);
 
         return TypeStringBool::new($this);
+    }
+
+    public function email(?Options $options = null)
+    {
+        $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
+
+        $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('email.type');
+        $this->addRule(Rules::email($errormessage), $options);
+
+        return TypeStringEmail::new($this);
     }
 
     // Rules

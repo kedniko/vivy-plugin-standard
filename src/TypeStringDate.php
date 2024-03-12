@@ -12,10 +12,10 @@ use Kedniko\Vivy\Transformer;
 
 final class TypeStringDate extends TypeString
 {
-    public function toFormat($format, Options $options = null)
+    public function toFormat($format, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
-        $sourceFormat = $this->state->_extra['format'];
+        $sourceFormat = $this->setup->_extra['format'];
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage();
 
         $transformer = new Transformer('toFormat', function (ContextInterface $c) use ($format, $sourceFormat): string {
@@ -33,11 +33,11 @@ final class TypeStringDate extends TypeString
         return $this;
     }
 
-    public function minDate(DateTime|string $date, Options $options = null)
+    public function minDate(DateTime|string $date, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('date.min');
-        $sourceFormat = Helpers::issetOrFail($this->state->_extra['format']);
+        $sourceFormat = Helpers::issetOrFail($this->setup->_extra['format']);
         if (is_string($date)) {
             $date = (new DateTime())->createFromFormat($sourceFormat, $date)->setTime(0, 0, 0, 0);
         }
@@ -46,11 +46,11 @@ final class TypeStringDate extends TypeString
         return $this;
     }
 
-    public function maxDate(DateTime|string $date, Options $options = null)
+    public function maxDate(DateTime|string $date, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage();
-        $sourceFormat = Helpers::issetOrFail($this->state->_extra['format']);
+        $sourceFormat = Helpers::issetOrFail($this->setup->_extra['format']);
         if (is_string($date)) {
             $date = (new DateTime())->createFromFormat($sourceFormat, $date)->setTime(0, 0, 0, 0);
         }
@@ -59,11 +59,11 @@ final class TypeStringDate extends TypeString
         return $this;
     }
 
-    public function between(DateTime|string $minDate, DateTime|string $maxDate, Options $options = null)
+    public function between(DateTime|string $minDate, DateTime|string $maxDate, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('date.between');
-        $sourceFormat = Helpers::issetOrFail($this->state->_extra['format']);
+        $sourceFormat = Helpers::issetOrFail($this->setup->_extra['format']);
         if (is_string($minDate)) {
             $minDate = (new DateTime())->createFromFormat($sourceFormat, $minDate)->setTime(0, 0, 0, 0);
         }
@@ -75,11 +75,11 @@ final class TypeStringDate extends TypeString
         return $this;
     }
 
-    public function notBetweenInclusive(DateTime $minDate, DateTime $maxDate, Options $options = null)
+    public function notBetweenInclusive(DateTime $minDate, DateTime $maxDate, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('date.between');
-        $sourceFormat = Helpers::issetOrFail($this->state->_extra['format']);
+        $sourceFormat = Helpers::issetOrFail($this->setup->_extra['format']);
         $this->addRule(Rules::notBetween($minDate, $maxDate, $sourceFormat, $errormessage), $options);
 
         return $this;

@@ -6,7 +6,6 @@ use Kedniko\Vivy\V;
 
 uses()->group('boolValue');
 
-
 test('boolValue', function () {
 
     Utils::expectValidToBe(
@@ -27,6 +26,8 @@ test('boolValue', function () {
             [new \stdClass(), false],
         ],
     );
+});
+test('boolValueStdClass', function () {
 
     $obj = new \stdClass();
 

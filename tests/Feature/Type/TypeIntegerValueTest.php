@@ -6,7 +6,6 @@ use Kedniko\Vivy\V;
 
 uses()->group('intValue');
 
-
 test('intValue', function () {
 
     Utils::expectValidToBe(

@@ -6,7 +6,6 @@ use Kedniko\Vivy\V;
 
 uses()->group('set-value');
 
-
 test('set-value-int', function () {
     expect(
         V::int()->setValue(fn ($c) => $c->value / 100)->validate(10)->value()

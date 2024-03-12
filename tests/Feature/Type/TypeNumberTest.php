@@ -6,7 +6,6 @@ use Kedniko\Vivy\V;
 
 uses()->group('number');
 
-
 test('number-int', function () {
     expect(V::int()->validate(10)->isValid())->toBeTrue();
     expect(V::int()->validate('10')->isValid())->toBeFalse();

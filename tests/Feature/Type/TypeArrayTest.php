@@ -2,15 +2,13 @@
 
 namespace Tests;
 
+use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Core\GroupContext;
 use Kedniko\Vivy\O;
 use Kedniko\Vivy\V;
-use Kedniko\Vivy\ArrayContext;
-use Kedniko\Vivy\Core\GroupContext;
-use Kedniko\Vivy\Contracts\ContextInterface;
 
 $faker = \Faker\Factory::create();
 uses()->group('array');
-
 
 test('array-int', function () {
 
@@ -31,7 +29,6 @@ test('array-int', function () {
         ->each(V::int())->validate($data);
     expect(count($err->errors()['count']) === 1)->toBeTrue();
 });
-
 
 test('array-group', function () use ($faker) {
     $persona = V::group([
@@ -84,14 +81,15 @@ test('group-key-value', function () {
             function (GroupContext $c) use ($days) {
                 $data = $c->value;
                 foreach ($data as $key => $value) {
-                    if (!in_array($key, $days)) {
+                    if (! in_array($key, $days)) {
                         $c->errors[$key]['key'][] = 'key not valid';
                     }
 
-                    if (!is_bool($value)) {
+                    if (! is_bool($value)) {
                         $c->errors[$key]['value'][] = 'value not valid';
                     }
                 }
+
                 return true;
             }
         )),
@@ -100,13 +98,13 @@ test('group-key-value', function () {
     expect($validated->isValid())->toBeTrue();
 });
 
-
 test('in-array', function () {
 
     $message = O::message(function (ContextInterface $c) {
         $m = $c->getMiddleware();
         $id = $m->getID();
         $value = $c->value;
+
         return "Received [{$value}]";
     });
 
@@ -122,24 +120,25 @@ test('in-array', function () {
 
     $ruleLetters = V::string()
         ->in(
-            ['6T', 'E2', 'E3', 'E4', 'E5', 'E6',],
+            ['6T', 'E2', 'E3', 'E4', 'E5', 'E6'],
             options: O::message(function (ContextInterface $c) {
                 $m = $c->getMiddleware();
                 $id = $m->getID();
                 $value = $c->value;
+
                 return "Received [{$value}]";
             })
         )
         ->length(2);
 
-    $validated = $ruleLetters->validate("6T");
+    $validated = $ruleLetters->validate('6T');
     expect($validated->isValid())->toBeTrue();
 
     $validated = V::group([
-        "letters" => $orNull($ruleLetters),
+        'letters' => $orNull($ruleLetters),
     ])
         ->validate([
-            "letters" => "6T",
+            'letters' => '6T',
         ]);
 
     expect($validated->isValid())->toBeTrue();

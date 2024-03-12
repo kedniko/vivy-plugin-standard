@@ -3,15 +3,13 @@
 namespace Kedniko\VivyPluginStandard;
 
 use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Support\Util;
-use Kedniko\VivyPluginStandard\Type;
-use Kedniko\Vivy\Messages\RuleMessage;
-use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 use Kedniko\Vivy\Enum\RulesEnum as CoreRulesEnum;
+use Kedniko\Vivy\Messages\RuleMessage;
+use Kedniko\Vivy\Support\Util;
 
 class TypeScalar extends Type
 {
-    public function in(array $array, bool $strict = true, Options $options = null)
+    public function in(array $array, bool $strict = true, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('valuesNotAllowed');
@@ -20,7 +18,7 @@ class TypeScalar extends Type
         return $this;
     }
 
-    public function notIn(array $array, bool $strict = true, Options $options = null)
+    public function notIn(array $array, bool $strict = true, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('valuesNotAllowed');
@@ -37,7 +35,7 @@ class TypeScalar extends Type
     // 	return $this;
     // }
 
-    public function regex($regex, $ruleID, Options $options = null)
+    public function regex($regex, $ruleID, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage($ruleID);
@@ -47,7 +45,7 @@ class TypeScalar extends Type
         return $this;
     }
 
-    public function notRegex($regex, $ruleID, Options $options = null)
+    public function notRegex($regex, $ruleID, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('notRegex');
@@ -60,7 +58,7 @@ class TypeScalar extends Type
     public function allowEmptyString()
     {
         $this->removeRule(CoreRulesEnum::ID_NOT_EMPTY_STRING->value);
-        $this->state->setNotEmptyString(false);
+        $this->setup->setNotEmptyString(false);
 
         return $this;
     }

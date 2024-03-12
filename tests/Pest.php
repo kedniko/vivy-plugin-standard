@@ -1,8 +1,8 @@
 <?php
 
-use Kedniko\Vivy\V;
-use Kedniko\Vivy\Support\Util;
 use Kedniko\Vivy\Messages\Error;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\V;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +14,6 @@ use Kedniko\Vivy\Messages\Error;
 | need to change it using the "uses()" function to bind a different classes or traits.
 |
 */
-
 
 // uses(Tests\TestCase::class)->in('Feature');
 

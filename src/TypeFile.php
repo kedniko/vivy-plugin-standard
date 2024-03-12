@@ -2,11 +2,11 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Contracts\ContextInterface;
 use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Core\Rule;
 use Kedniko\Vivy\Support\Util;
 use Kedniko\Vivy\Type\TypeCompound;
-use Kedniko\Vivy\Contracts\ContextInterface;
 
 final class TypeFile extends TypeCompound
 {
@@ -17,7 +17,7 @@ final class TypeFile extends TypeCompound
      */
     private const UNITS = ['B', 'KB', 'MB', 'GB'];
 
-    public function mime($mime, Options $options = null)
+    public function mime($mime, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Mime non corretto';
@@ -33,7 +33,7 @@ final class TypeFile extends TypeCompound
         return $this;
     }
 
-    public function pdf(Options $options = null)
+    public function pdf(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Non è un pdf';
@@ -52,7 +52,7 @@ final class TypeFile extends TypeCompound
     /**
      * @param  array  $extensions
      */
-    public function extensionIn($extensions, Options $options = null)
+    public function extensionIn($extensions, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Estensione non corretta';
@@ -64,7 +64,7 @@ final class TypeFile extends TypeCompound
         return $this;
     }
 
-    public function extension($extension, Options $options = null)
+    public function extension($extension, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Estensione non corretta';
@@ -76,7 +76,7 @@ final class TypeFile extends TypeCompound
         return $this;
     }
 
-    public function baseNameEquals($basename, Options $options = null)
+    public function baseNameEquals($basename, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Lunghezza basename non valida';
@@ -88,7 +88,7 @@ final class TypeFile extends TypeCompound
         return $this;
     }
 
-    public function baseNameLength($maxLength, Options $options = null)
+    public function baseNameLength($maxLength, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Lunghezza basename non valida';
@@ -100,7 +100,7 @@ final class TypeFile extends TypeCompound
         return $this;
     }
 
-    public function baseNameMinLength($maxLength, Options $options = null)
+    public function baseNameMinLength($maxLength, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Basename troppo corto';
@@ -112,7 +112,7 @@ final class TypeFile extends TypeCompound
         return $this;
     }
 
-    public function baseNameMaxLength($maxLength, Options $options = null)
+    public function baseNameMaxLength($maxLength, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Basename troppo lungo';
@@ -124,7 +124,7 @@ final class TypeFile extends TypeCompound
         return $this;
     }
 
-    public function fileNameLength($maxLength, Options $options = null)
+    public function fileNameLength($maxLength, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Lunghezza filename non valida';
@@ -136,7 +136,7 @@ final class TypeFile extends TypeCompound
         return $this;
     }
 
-    public function fileNameMinLength($maxLength, Options $options = null)
+    public function fileNameMinLength($maxLength, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Filename troppo corto';
@@ -148,7 +148,7 @@ final class TypeFile extends TypeCompound
         return $this;
     }
 
-    public function fileNameMaxLength($maxLength, Options $options = null)
+    public function fileNameMaxLength($maxLength, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Filename troppo lungo';
@@ -160,7 +160,7 @@ final class TypeFile extends TypeCompound
         return $this;
     }
 
-    public function size(mixed $size, mixed $unit = 'B', Options $options = null)
+    public function size(mixed $size, mixed $unit = 'B', ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensione file non accettata';
@@ -179,9 +179,9 @@ final class TypeFile extends TypeCompound
     }
 
     /**
-     * @param  string  $unit `B` | `KB` | `MB` | `GB`,
+     * @param  string  $unit  `B` | `KB` | `MB` | `GB`,
      */
-    public function maxSize(mixed $maxSize, mixed $unit = 'B', Options $options = null)
+    public function maxSize(mixed $maxSize, mixed $unit = 'B', ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensione file troppo grande';
@@ -199,7 +199,7 @@ final class TypeFile extends TypeCompound
         return $this;
     }
 
-    public function minSize(mixed $minSize, mixed $unit = 'B', Options $options = null)
+    public function minSize(mixed $minSize, mixed $unit = 'B', ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: 'Dimensione file troppo piccola';
@@ -218,8 +218,8 @@ final class TypeFile extends TypeCompound
     }
 
     /**
-     * @param  mixed  $from `B`|`KB`|`MB`|`GB`
-     * @param  mixed  $to `B`|`KB`|`MB`|`GB`
+     * @param  mixed  $from  `B`|`KB`|`MB`|`GB`
+     * @param  mixed  $to  `B`|`KB`|`MB`|`GB`
      */
     private function convertUnit(mixed $value, mixed $from, string $to): int|float
     {

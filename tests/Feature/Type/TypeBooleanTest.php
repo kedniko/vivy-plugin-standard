@@ -6,7 +6,6 @@ use Kedniko\Vivy\V;
 
 uses()->group('bool');
 
-
 test('bool', function () {
     expect(V::bool()->validate(true)->isValid())->toBeTrue();
     expect(V::string()->bool()->validate('true')->isValid())->toBeTrue();

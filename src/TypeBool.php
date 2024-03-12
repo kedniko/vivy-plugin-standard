@@ -2,22 +2,19 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Core\Rule;
-use Kedniko\Vivy\Core\Helpers;
-use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Support\Util;
-use Kedniko\Vivy\Rules as CoreRules;
-use Kedniko\VivyPluginStandard\Rules;
-use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\Vivy\Messages\TransformerMessage;
+use Kedniko\Vivy\Rules as CoreRules;
+use Kedniko\Vivy\Support\Util;
 use Kedniko\VivyPluginStandard\Enum\RulesEnum;
 use Kedniko\VivyPluginStandard\Enum\TransformersEnum;
 
 final class TypeBool extends TypeScalar
 {
-
-    public function equals($bool, $strict = true, Options $options = null)
+    public function equals($bool, $strict = true, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('bool.is');
@@ -26,7 +23,7 @@ final class TypeBool extends TypeScalar
         return $this;
     }
 
-    public function isTrue(Options $options = null)
+    public function isTrue(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('bool.isTrue');
@@ -37,7 +34,7 @@ final class TypeBool extends TypeScalar
         return $this;
     }
 
-    public function isFalse(Options $options = null)
+    public function isFalse(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('bool.isFalse');
@@ -60,7 +57,7 @@ final class TypeBool extends TypeScalar
         return new Rule($ruleID, $ruleFn, $errormessage);
     }
 
-    public function toInteger(Options $options = null)
+    public function toInteger(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('boolToInt');
@@ -76,7 +73,7 @@ final class TypeBool extends TypeScalar
         return $type;
     }
 
-    public function toString(Options $options = null)
+    public function toString(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
         $errormessage = $options->getErrorMessage() ?: TransformerMessage::getErrorMessage('boolToInt');

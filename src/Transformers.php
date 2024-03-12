@@ -2,17 +2,15 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\Transformer;
-use Kedniko\Vivy\Core\Constants;
 use Kedniko\Vivy\Contracts\ContextInterface;
-use Kedniko\Vivy\Messages\TransformerMessage;
+use Kedniko\Vivy\Core\Constants;
 use Kedniko\Vivy\Exceptions\VivyTransformerException;
+use Kedniko\Vivy\Messages\TransformerMessage;
+use Kedniko\Vivy\Transformer;
 use Kedniko\VivyPluginStandard\Enum\TransformersEnum;
 
 final class Transformers
 {
-
-
     public static function trim($characters = " \t\n\r\0\x0B", $errormessage = null): Transformer
     {
         $transformerID = TransformersEnum::ID_TRIM->value;
@@ -23,7 +21,7 @@ final class Transformers
             if ($value === null) {
                 return $value;
             }
-            if (!is_string($value)) {
+            if (! is_string($value)) {
                 throw new VivyTransformerException();
             }
 
@@ -38,7 +36,7 @@ final class Transformers
 
         return new Transformer($transformerID, function (ContextInterface $c) use ($characters): string {
             $value = $c->value;
-            if (!is_string($value)) {
+            if (! is_string($value)) {
                 throw new VivyTransformerException();
             }
 
@@ -53,7 +51,7 @@ final class Transformers
 
         return new Transformer($transformerID, function (ContextInterface $c) use ($characters): string {
             $value = $c->value;
-            if (!is_string($value)) {
+            if (! is_string($value)) {
                 throw new VivyTransformerException();
             }
 
@@ -68,7 +66,7 @@ final class Transformers
 
         return new Transformer($transformerID, function (ContextInterface $c): string {
             $value = $c->value;
-            if (!is_string($value)) {
+            if (! is_string($value)) {
                 throw new VivyTransformerException();
             }
 
@@ -82,23 +80,36 @@ final class Transformers
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c): string {
-            $value = $c->value;
-            if (!is_string($value)) {
+            if (! is_string($c->value)) {
                 throw new VivyTransformerException();
             }
 
-            return mb_strtolower($value, 'UTF-8');
+            return mb_strtolower($c->value, 'UTF-8');
         }, $errormessage);
     }
 
-    public static function firstLetterUpperCase($errormessage = null): Transformer
+    public static function toReplace(array|string $search, array|string $replace, $errormessage = null): Transformer
+    {
+        $transformerID = TransformersEnum::ID_TO_LOWER_CASE->value;
+        $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
+
+        return new Transformer($transformerID, function (ContextInterface $c) use ($search, $replace): string {
+            if (! is_string($c->value)) {
+                throw new VivyTransformerException();
+            }
+
+            return str_replace($search, $replace, $c->value);
+        }, $errormessage);
+    }
+
+    public static function upperCaseFirstLetter($errormessage = null): Transformer
     {
         $transformerID = TransformersEnum::ID_FIRST_LETTER_UPPER_CASE->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c): string {
             $value = $c->value;
-            if (!is_string($value)) {
+            if (! is_string($value)) {
                 throw new VivyTransformerException();
             }
 
@@ -106,14 +117,29 @@ final class Transformers
         }, $errormessage);
     }
 
-    public static function firstLetterLowerCase($errormessage = null): Transformer
+    public static function upperCaseFirstLetterEachWord($separators, $errormessage = null): Transformer
+    {
+        $transformerID = TransformersEnum::ID_FIRST_LETTER_UPPER_CASE->value;
+        $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
+
+        return new Transformer($transformerID, function (ContextInterface $c) use ($separators): string {
+            $value = $c->value;
+            if (! is_string($value)) {
+                throw new VivyTransformerException();
+            }
+
+            return ucwords($value, $separators);
+        }, $errormessage);
+    }
+
+    public static function lowerCaseFirstLetter($errormessage = null): Transformer
     {
         $transformerID = TransformersEnum::ID_FIRST_LETTER_LOWER_CASE->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
 
         return new Transformer($transformerID, function (ContextInterface $c): string {
             $value = $c->value;
-            if (!is_string($value)) {
+            if (! is_string($value)) {
                 throw new VivyTransformerException();
             }
 
@@ -128,7 +154,7 @@ final class Transformers
      *
      * @throws VivyTransformerException
      */
-    public static function stringToInt($errormessage = null): Transformer
+    public static function stringNumberToInt($errormessage = null): Transformer
     {
         $transformerID = TransformersEnum::ID_STRING_TO_INT->value;
         $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
@@ -136,16 +162,37 @@ final class Transformers
         return new Transformer($transformerID, function (ContextInterface $c): int {
             $value = $c->value;
 
-            if (!is_string($value)) {
+            if (! is_string($value)) {
                 throw new VivyTransformerException('This is not a string');
             }
 
-            $isTypeIntString = preg_match(Constants::REGEX_INTEGER_POSITIVE_OR_NEGATIVE, $value) === 1;
-            if (!$isTypeIntString) {
-                throw new VivyTransformerException('String does not contain an integer');
-            }
+            // $isTypeIntString = preg_match(Constants::REGEX_INTEGER_POSITIVE_OR_NEGATIVE, $value) === 1;
+            // if (!$isTypeIntString) {
+            //     throw new VivyTransformerException('String does not contain an integer');
+            // }
 
             return (int) $value;
+        }, $errormessage);
+    }
+
+    public static function stringNumberToFloat($errormessage = null): Transformer
+    {
+        $transformerID = TransformersEnum::ID_STRING_TO_INT->value;
+        $errormessage = $errormessage ?: TransformerMessage::getErrorMessage($transformerID);
+
+        return new Transformer($transformerID, function (ContextInterface $c): int {
+            $value = $c->value;
+
+            if (! is_string($value)) {
+                throw new VivyTransformerException('This is not a string');
+            }
+
+            // $isTypeIntString = preg_match(Constants::REGEX_FLOAT_POSITIVE_OR_NEGATIVE, $value) === 1;
+            // if (!$isTypeIntString) {
+            //     throw new VivyTransformerException('String does not contain an float');
+            // }
+
+            return (float) $value;
         }, $errormessage);
     }
 
@@ -157,12 +204,12 @@ final class Transformers
         return new Transformer($transformerID, function (ContextInterface $c): bool {
             $value = $c->value;
 
-            if (!is_string($value)) {
-                throw new VivyTransformerException(json_encode($value, JSON_THROW_ON_ERROR) . ' is not a string');
+            if (! is_string($value)) {
+                throw new VivyTransformerException(json_encode($value, JSON_THROW_ON_ERROR).' is not a string');
             }
 
-            if (!in_array($c->value, ['true', 'false'], true)) {
-                throw new VivyTransformerException($value . ' is not allowed in strict mode');
+            if (! in_array($c->value, ['true', 'false'], true)) {
+                throw new VivyTransformerException($value.' is not allowed in strict mode');
             }
 
             return $value === 'true';
@@ -193,7 +240,7 @@ final class Transformers
                 return $value === 1;
             }
 
-            throw new VivyTransformerException($value . ' is not allowed');
+            throw new VivyTransformerException($value.' is not allowed');
         }, $errormessage);
     }
 
@@ -207,10 +254,11 @@ final class Transformers
 
             if (is_scalar($value)) {
                 $val = intval($value);
+
                 return $val;
             }
 
-            throw new VivyTransformerException($value . ' is not allowed');
+            throw new VivyTransformerException($value.' is not allowed');
         }, $errormessage);
     }
 
@@ -222,7 +270,7 @@ final class Transformers
         return new Transformer($transformerID, function (ContextInterface $c) {
             $value = $c->value;
 
-            if (!is_int($value)) {
+            if (! is_int($value)) {
                 throw new VivyTransformerException();
             }
 
@@ -242,7 +290,7 @@ final class Transformers
         return new Transformer($transformerID, function (ContextInterface $c) {
             $value = $c->value;
 
-            if (!is_int($value) && !is_float($value)) {
+            if (! is_int($value) && ! is_float($value)) {
                 throw new VivyTransformerException();
             }
 
@@ -262,7 +310,7 @@ final class Transformers
         return new Transformer($transformerID, function (ContextInterface $c): int {
             $value = $c->value;
 
-            if (!is_bool($value)) {
+            if (! is_bool($value)) {
                 throw new VivyTransformerException('This is not a bool');
             }
 
@@ -278,7 +326,7 @@ final class Transformers
         return new Transformer($transformerID, function (ContextInterface $c): string {
             $value = $c->value;
 
-            if (!is_bool($value)) {
+            if (! is_bool($value)) {
                 throw new VivyTransformerException('This is not a bool');
             }
 

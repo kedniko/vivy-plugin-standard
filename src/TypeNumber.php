@@ -2,13 +2,13 @@
 
 namespace Kedniko\VivyPluginStandard;
 
-use Kedniko\Vivy\V;
 use Brick\Math\BigDecimal;
-use Kedniko\Vivy\Core\Rule;
-use Kedniko\Vivy\Core\Options;
-use Kedniko\Vivy\Support\Util;
-use Kedniko\Vivy\Messages\RuleMessage;
 use Kedniko\Vivy\Contracts\ContextInterface;
+use Kedniko\Vivy\Core\Options;
+use Kedniko\Vivy\Core\Rule;
+use Kedniko\Vivy\Messages\RuleMessage;
+use Kedniko\Vivy\Support\Util;
+use Kedniko\Vivy\V;
 
 class TypeNumber extends TypeScalar
 {
@@ -30,7 +30,7 @@ class TypeNumber extends TypeScalar
 
     public const ID_NUMBER_TO_STRING = 'numberToString';
 
-    public function min(\Brick\Math\BigNumber|int|float|string $min, Options $options = null)
+    public function min(\Brick\Math\BigNumber|int|float|string $min, ?Options $options = null)
     {
         $ruleid = self::ID_MIN;
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
@@ -40,7 +40,7 @@ class TypeNumber extends TypeScalar
         return $this;
     }
 
-    public function max(\Brick\Math\BigNumber|int|float|string $max, Options $options = null)
+    public function max(\Brick\Math\BigNumber|int|float|string $max, ?Options $options = null)
     {
         $ruleid = self::ID_MAX;
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
@@ -50,7 +50,7 @@ class TypeNumber extends TypeScalar
         return $this;
     }
 
-    public function decimalPartIs(\Brick\Math\BigNumber|int|float|string $number, Options $options = null)
+    public function decimalPartIs(\Brick\Math\BigNumber|int|float|string $number, ?Options $options = null)
     {
         $ruleID = self::ID_NUMBER_DECIMAL_PART_IS;
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
@@ -58,8 +58,8 @@ class TypeNumber extends TypeScalar
 
         $rule = V::rule($ruleID, function (ContextInterface $c) use ($number): bool {
             try {
-                $srcFractionalPart = BigDecimal::of('0.' . BigDecimal::of($c->value)->getFractionalPart());
-                $destfractionalPart = BigDecimal::of('0.' . BigDecimal::of($number)->getFractionalPart());
+                $srcFractionalPart = BigDecimal::of('0.'.BigDecimal::of($c->value)->getFractionalPart());
+                $destfractionalPart = BigDecimal::of('0.'.BigDecimal::of($number)->getFractionalPart());
 
                 return $srcFractionalPart->isEqualTo($destfractionalPart);
             } catch (\Throwable) {
@@ -72,7 +72,7 @@ class TypeNumber extends TypeScalar
         return $this;
     }
 
-    public function multipleOf(\Brick\Math\BigNumber|int|float|string $number, Options $options = null)
+    public function multipleOf(\Brick\Math\BigNumber|int|float|string $number, ?Options $options = null)
     {
         $ruleID = self::ID_NUMBER_MULTIPLE_OF;
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
@@ -93,7 +93,7 @@ class TypeNumber extends TypeScalar
         return $this;
     }
 
-    public function decimalPartMin(\Brick\Math\BigNumber|int|float|string $min, Options $options = null)
+    public function decimalPartMin(\Brick\Math\BigNumber|int|float|string $min, ?Options $options = null)
     {
         $ruleID = self::ID_NUMBER_DECIMAL_PART_MIN;
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
@@ -117,7 +117,7 @@ class TypeNumber extends TypeScalar
         return $this;
     }
 
-    public function fractionalPartMax(\Brick\Math\BigNumber|int|float|string $max, Options $options = null)
+    public function fractionalPartMax(\Brick\Math\BigNumber|int|float|string $max, ?Options $options = null)
     {
         $ruleID = self::ID_NUMBER_DECIMAL_PART_MAX;
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
@@ -141,7 +141,7 @@ class TypeNumber extends TypeScalar
         return $this;
     }
 
-    public function between($min, $max, Options $options = null)
+    public function between($min, $max, ?Options $options = null)
     {
         $ruleid = self::ID_NUMBER_BETWEEN;
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
@@ -157,7 +157,7 @@ class TypeNumber extends TypeScalar
         return $this;
     }
 
-    public function notBetween($min, $max, Options $options = null)
+    public function notBetween($min, $max, ?Options $options = null)
     {
         $ruleid = self::ID_NUMBER_NOT_BETWEEN;
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
@@ -165,7 +165,7 @@ class TypeNumber extends TypeScalar
         $rule = new Rule($ruleid, function (ContextInterface $c) use ($min, $max): bool {
             $value = $c->value;
 
-            return !($value >= $min && $value <= $max);
+            return ! ($value >= $min && $value <= $max);
         }, $errormessage);
 
         $this->addRule($rule, $options);
@@ -173,7 +173,7 @@ class TypeNumber extends TypeScalar
         return $this;
     }
 
-    public function toString($errormessage = null, Options $options = null)
+    public function toString($errormessage = null, ?Options $options = null)
     {
         $ruleid = self::ID_NUMBER_TO_STRING;
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
