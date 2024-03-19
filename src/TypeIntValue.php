@@ -15,6 +15,6 @@ final class TypeIntValue extends TypeNumber
         $transformer = Transformers::intValueToInt($errormessage);
         $this->addTransformer($transformer, $options);
 
-        return TypeBool::new($this);
+        return TypeInt::new($this);
     }
 }
