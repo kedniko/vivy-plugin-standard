@@ -18,6 +18,7 @@ class TypeScalar extends Type
         return $this;
     }
 
+
     public function notIn(array $array, bool $strict = true, ?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
@@ -51,14 +52,6 @@ class TypeScalar extends Type
         $errormessage = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('notRegex');
 
         $this->addRule(Rules::notRegex($regex, $ruleID, $errormessage), $options);
-
-        return $this;
-    }
-
-    public function allowEmptyString()
-    {
-        $this->removeRule(CoreRulesEnum::ID_NOT_EMPTY_STRING->value);
-        $this->setup->setNotEmptyString(false);
 
         return $this;
     }

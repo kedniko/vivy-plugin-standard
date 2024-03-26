@@ -300,7 +300,6 @@ final class StandardLibrary implements VivyPlugin
         return function (?TypeInterface $obj) use ($options) {
             $type = TypeString::new(from: $obj);
             $type->addRule(Rules::string($options->getErrorMessage()), $options);
-            // $type->allowEmptyString();
 
             return $type;
         };
@@ -413,19 +412,6 @@ final class StandardLibrary implements VivyPlugin
         };
     }
 
-    // public static function allowEmptyString()
-    // {
-    //     $type = new TypeUnkown();
-    //     // TODO
-    //     $type->allowEmptyString();
-    //     return $type;
-    // }
-    // public static function allowNullTODO()
-    // {
-    //     $type = new TypeUnkown();
-    //     $type->allowNull();
-    //     return $type;
-    // }
     public static function notNull(?Options $options = null)
     {
         $options = Options::build($options, Util::getRuleArgs(__METHOD__, func_get_args()), __METHOD__);
@@ -470,7 +456,6 @@ final class StandardLibrary implements VivyPlugin
             $type = TypeStringEmpty::new(from: $obj);
             $err = $options->getErrorMessage() ?: RuleMessage::getErrorMessage('default.'.CoreRulesEnum::ID_EMPTY_STRING->value);
             $type->addRule(CoreRules::emptyString($trim, $err, $options));
-            $type->allowEmptyString();
 
             return $type;
         };
